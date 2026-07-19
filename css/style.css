@@ -530,6 +530,20 @@ a.badge:hover { text-decoration: underline; }
 .pi-info h3 .kr { font-weight: 500; color: var(--muted); font-size: 1.25rem; }
 .pi-info .role { margin-top: 3px; color: var(--accent); font-weight: 600; font-size: 0.94rem; }
 .pi-info .contact-line { margin-top: 10px; font-size: 0.9rem; color: var(--ink-soft); }
+.pi-info .pi-links { margin-top: 13px; display: flex; flex-wrap: wrap; gap: 8px; }
+.pi-info .pi-links a {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.84rem;
+  font-weight: 600;
+  color: var(--accent);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 5px 14px;
+  transition: border-color 0.2s ease, background 0.2s ease;
+}
+.pi-info .pi-links a:hover { border-color: var(--accent); background: var(--bg-soft); }
 .pi-info .bio { margin-top: 14px; color: var(--ink-soft); font-size: 0.95rem; }
 
 .cv-block { margin-top: 24px; }
