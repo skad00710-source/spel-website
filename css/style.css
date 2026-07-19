@@ -87,7 +87,7 @@ ul { list-style: none; }
 .nav .nav-item > button:hover { color: var(--ink); background: var(--bg-soft); }
 .nav a.top-link.active { color: var(--accent); }
 
-.nav .nav-item > button .caret {
+.nav .nav-item > a .caret {
   font-size: 0.6rem;
   transform: translateY(1px);
 }
@@ -900,7 +900,7 @@ a.badge:hover { text-decoration: underline; }
   }
   .nav.open { display: flex; }
   .nav-toggle { display: block; }
-  .nav .nav-item > button { width: 100%; justify-content: space-between; }
+  .nav .nav-item > a.top-link { width: 100%; justify-content: space-between; }
   .dropdown {
     position: static;
     display: block;
