@@ -604,6 +604,7 @@ a.badge:hover { text-decoration: underline; }
   font-size: 0.96rem;
   color: var(--muted);
   line-height: 1.5;
+  text-transform: capitalize;
 }
 .member .ri-list li::before {
   content: "";
