@@ -58,6 +58,7 @@ document.querySelectorAll(".cover-strip").forEach((strip) => {
 
   strip.addEventListener("pointerdown", (e) => {
     if (e.pointerType !== "mouse" || e.button !== 0) return;
+    if (e.target.closest("figcaption")) return; // let text be selected instead of panning
     down = true; moved = false;
     startX = e.clientX; startLeft = strip.scrollLeft;
     window.addEventListener("pointermove", onMove);

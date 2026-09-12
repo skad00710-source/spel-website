@@ -409,8 +409,9 @@ ul { list-style: none; }
 }
 .cover-strip::-webkit-scrollbar { height: 8px; }
 .cover-strip::-webkit-scrollbar-thumb { background: var(--line); border-radius: 4px; }
-.cover-strip { cursor: grab; user-select: none; }
-.cover-strip.dragging { cursor: grabbing; scroll-snap-type: none; }
+.cover-strip { cursor: grab; }
+.cover-strip.dragging { cursor: grabbing; scroll-snap-type: none; user-select: none; }
+.cover-strip figcaption { cursor: text; }
 .cover-strip img { -webkit-user-drag: none; }
 
 .cover-item {
