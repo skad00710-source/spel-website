@@ -37,3 +37,35 @@ const here = location.pathname.split("/").pop() || "index.html";
 document.querySelectorAll(".nav a.top-link").forEach((a) => {
   if (a.getAttribute("href") === here) a.classList.add("active");
 });
+
+// Drag-to-scroll for horizontal cover strips (mouse only; touch already scrolls natively)
+document.querySelectorAll(".cover-strip").forEach((strip) => {
+  let down = false, moved = false, startX = 0, startLeft = 0;
+  const THRESHOLD = 6; // px of movement before a press counts as a drag
+
+  const onMove = (e) => {
+    if (!down) return;
+    const dx = e.clientX - startX;
+    if (!moved && Math.abs(dx) > THRESHOLD) { moved = true; strip.classList.add("dragging"); }
+    if (moved) strip.scrollLeft = startLeft - dx;
+  };
+  const onUp = () => {
+    down = false;
+    strip.classList.remove("dragging");
+    window.removeEventListener("pointermove", onMove);
+    window.removeEventListener("pointerup", onUp);
+  };
+
+  strip.addEventListener("pointerdown", (e) => {
+    if (e.pointerType !== "mouse" || e.button !== 0) return;
+    down = true; moved = false;
+    startX = e.clientX; startLeft = strip.scrollLeft;
+    window.addEventListener("pointermove", onMove);
+    window.addEventListener("pointerup", onUp);
+  });
+
+  // A drag must not open the cover's link; a plain click still does
+  strip.addEventListener("click", (e) => { if (moved) { e.preventDefault(); e.stopPropagation(); } }, true);
+  // Suppress the browser's native image ghost-drag
+  strip.addEventListener("dragstart", (e) => e.preventDefault());
+});
