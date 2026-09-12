@@ -713,15 +713,20 @@ a.badge:hover { text-decoration: underline; }
 }
 .news-item:first-child { border-top: 1px solid var(--line); }
 .news-item .date { font-size: 0.86rem; font-weight: 700; color: var(--muted); }
-.news-item .txt { font-size: 0.94rem; color: var(--ink-soft); }
+.news-item .txt {
+  font-size: 0.94rem;
+  color: var(--ink-soft);
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+}
 .news-item .txt .tag {
-  display: inline-block;
+  flex: 0 0 auto;
+  white-space: nowrap;
   font-size: 0.7rem;
   font-weight: 700;
   padding: 2px 9px;
   border-radius: 999px;
-  margin-right: 8px;
-  vertical-align: 1px;
 }
 .tag.grant { background: #eef2ff; color: #4338ca; }
 .tag.award { background: #ecfdf5; color: #047857; }
