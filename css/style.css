@@ -274,7 +274,7 @@ ul { list-style: none; }
 .card:hover { transform: translateY(-5px); box-shadow: var(--shadow); }
 
 .card .thumb {
-  aspect-ratio: 16 / 10;
+  aspect-ratio: 4 / 3;
   overflow: hidden;
   background: var(--bg-soft);
 }
