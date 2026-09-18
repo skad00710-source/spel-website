@@ -6,106 +6,109 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700;900&display=swap" />
 <style>
   :root {
-    --bg: #0b1221; --panel: #111b30; --panel2: #0e1729; --line: #24334f;
-    --ink: #eef3fb; --muted: #8fa1bf; --dim: #5d6f8f; --accent: #4da3ff;
-    --ok: #35d39a; --warn: #ffb54d; --pink: #ff6b9a; --violet: #a78bfa;
+    --ink: #191d26; --ink-soft: #454c5e; --muted: #7a8194; --dim: #a3a9b8;
+    --bg: #ffffff; --bg-soft: #f6f7fa; --line: #e7e9f0;
+    --accent: #3452e0; --ok: #0f9d6e; --warn: #d97b06; --pink: #d6336c; --violet: #6d3fd8;
+    --spectrum: linear-gradient(90deg, #7b2ff7, #2f80ed, #00c48c, #f5a623, #f0304a);
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
   html, body { width: 1280px; height: 720px; overflow: hidden; background: var(--bg); color: var(--ink);
-    font-family: "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif; }
+    font-family: "Pretendard", "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif; word-break: keep-all;
+    -webkit-font-smoothing: antialiased; }
   #stage { position: relative; width: 1280px; height: 720px; overflow: hidden; }
   .scene { position: absolute; inset: 0; opacity: 0; }
   .scene.on { opacity: 1; }
-  svg text { font-family: "Noto Sans KR", sans-serif; }
+  svg text { font-family: "Pretendard", "Noto Sans KR", sans-serif; }
 
-  /* ---------- shared scene chrome (mirrors the reference clips) ---------- */
-  .hdr { position: absolute; left: 28px; right: 28px; top: 20px; height: 44px; border-bottom: 1px solid var(--line);
+  /* ---------- shared scene chrome ---------- */
+  .hdr { position: absolute; left: 28px; right: 28px; top: 22px; height: 44px; border-bottom: 1px solid var(--line);
     display: flex; align-items: flex-start; justify-content: space-between; }
-  .hdr h1 { font-size: 22px; font-weight: 900; letter-spacing: -0.01em; }
-  .hdr h1 small { font-size: 13px; font-weight: 400; color: var(--muted); margin-left: 12px; }
-  .hdr .tag { font-size: 12px; color: var(--muted); margin-top: 7px; letter-spacing: 0.02em; white-space: nowrap; }
+  .hdr h1 { font-size: 22px; font-weight: 800; letter-spacing: -0.02em; color: var(--ink); }
+  .hdr h1 small { font-size: 13px; font-weight: 500; color: var(--muted); margin-left: 12px; letter-spacing: 0; }
+  .hdr .tag { font-size: 12px; color: var(--muted); margin-top: 8px; letter-spacing: 0.02em; white-space: nowrap; }
   .hdr .tag b { color: var(--accent); font-weight: 700; }
-  .lbl { position: absolute; font-size: 12px; color: var(--muted); letter-spacing: 0.02em; white-space: nowrap; }
+  .lbl { position: absolute; font-size: 12px; color: var(--muted); letter-spacing: 0.01em; white-space: nowrap; }
   .lbl b { color: var(--ink); font-weight: 700; }
-  .panel { position: absolute; background: var(--panel); border: 1px solid var(--line); border-radius: 10px; overflow: hidden; }
-  .panel.dark { background: #05070c; }
-  .panel.light { background: #fff; }
+  .panel { position: absolute; background: var(--bg-soft); border-radius: 4px; overflow: hidden; }
+  .panel.dark { background: #0b0d12; }
+  .panel.light { background: #ffffff; border: 1px solid var(--line); }
   .panel > img.clip { position: absolute; left: 0; top: 0; }
-  .banner { position: absolute; left: 28px; right: 28px; bottom: 74px; height: 44px; border-radius: 10px;
-    background: #15223a; border: 1px solid #2a3d5e; display: flex; align-items: center; justify-content: center;
-    font-size: 19px; font-weight: 700; letter-spacing: -0.01em; white-space: nowrap; }
-  .banner .arr { color: var(--accent); margin: 0 10px; font-weight: 900; }
-  .banner .hl { color: var(--warn); }
+  .banner { position: absolute; left: 28px; right: 28px; bottom: 74px; height: 44px; border-top: 1px solid var(--line);
+    display: flex; align-items: center; justify-content: center; font-size: 19px; font-weight: 700; letter-spacing: -0.01em; white-space: nowrap; color: var(--ink); }
+  .banner .arr { color: var(--accent); margin: 0 12px; font-weight: 800; }
+  .banner .hl { color: var(--accent); }
   .prog { position: absolute; left: 28px; right: 28px; bottom: 26px; height: 18px; }
-  .prog .bar { position: absolute; left: 0; right: 0; top: 8px; height: 2px; background: #223252; }
-  .prog .fill { position: absolute; left: 0; top: 8px; height: 2px; background: var(--accent); }
-  .prog .now { position: absolute; top: 2px; width: 2px; height: 14px; background: var(--warn); }
+  .prog .bar { position: absolute; left: 0; right: 0; top: 8px; height: 2px; background: var(--line); }
+  .prog .fill { position: absolute; left: 0; top: 8px; height: 2px; background: var(--spectrum); }
+  .prog .now { position: absolute; top: 2px; width: 2px; height: 14px; background: var(--ink); }
   .prog .tm { position: absolute; left: 0; top: -22px; font-size: 12px; color: var(--muted); }
-  .prog .tm b { color: var(--ink); }
+  .prog .tm b { color: var(--ink); font-variant-numeric: tabular-nums; }
   .prog .src { position: absolute; right: 0; top: -22px; font-size: 11px; color: var(--dim); }
-  .cap { position: absolute; left: 0; right: 0; bottom: 0; padding: 9px 12px 8px; background: rgba(6,10,20,0.96);
-    font-size: 12px; color: var(--muted); line-height: 1.45; border-top: 1px solid #1c2740; }
-  .cap b { color: var(--ink); display: block; font-size: 13px; }
+  .cap { position: absolute; left: 0; right: 0; bottom: 0; padding: 9px 12px 8px; background: rgba(8,10,16,0.97);
+    font-size: 12px; color: #b9c0cf; line-height: 1.45; }
+  .cap b { color: #fff; display: block; font-size: 13px; font-weight: 700; }
   .cap i { color: #fff; font-style: normal; }
-  .chip { position: absolute; left: 10px; top: 10px; font-size: 11px; font-weight: 700; color: #fff; background: rgba(77,163,255,0.85);
-    padding: 3px 8px; border-radius: 4px; letter-spacing: 0.02em; }
-  .chip.sim { background: rgba(167,139,250,0.9); }
+  .chip { position: absolute; left: 10px; top: 10px; font-size: 11px; font-weight: 600; color: #fff; background: rgba(0,0,0,0.55);
+    padding: 3px 8px; border-radius: 3px; letter-spacing: 0.02em; }
+  .chip.sim { color: var(--ink); background: rgba(255,255,255,0.92); border: 1px solid var(--line); }
 
-  /* readout cards */
-  .cards { position: absolute; display: flex; flex-direction: column; gap: 8px; }
-  .card { border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px; background: var(--panel2); }
-  .card .k { font-size: 11px; color: var(--muted); letter-spacing: 0.02em; }
-  .card .v { font-size: 20px; font-weight: 900; margin-top: 1px; font-variant-numeric: tabular-nums; }
-  .card .v small { font-size: 11px; color: var(--muted); font-weight: 400; margin-left: 4px; }
-  .card .bar { height: 5px; border-radius: 3px; background: #1c2a44; margin-top: 6px; overflow: hidden; }
-  .card .bar i { display: block; height: 100%; width: 0; background: var(--accent); border-radius: 3px; }
-  .card.violet { border-color: #4b3f8a; } .card.violet .bar i { background: var(--violet); }
-  .card.green { border-color: #1f6a52; } .card.green .bar i { background: var(--ok); }
-  .card.pink { border-color: #7a3552; } .card.pink .bar i { background: var(--pink); }
+  /* readout cards: no boxes, thin rules */
+  .cards { position: absolute; display: flex; flex-direction: column; gap: 0; }
+  .card { padding: 9px 0 10px; border-bottom: 1px solid var(--line); background: transparent; }
+  .card .k { font-size: 11px; color: var(--muted); letter-spacing: 0.01em; }
+  .card .v { font-size: 22px; font-weight: 800; margin-top: 1px; font-variant-numeric: tabular-nums; letter-spacing: -0.02em; }
+  .card .v small { font-size: 11px; color: var(--muted); font-weight: 500; margin-left: 4px; }
+  .card .bar { height: 4px; border-radius: 2px; background: var(--line); margin-top: 7px; overflow: hidden; }
+  .card .bar i { display: block; height: 100%; width: 0; background: var(--accent); border-radius: 2px; }
+  .card.violet .bar i { background: var(--violet); }
+  .card.green .bar i { background: var(--ok); }
+  .card.pink .bar i { background: var(--pink); }
   .card.warn .bar i { background: var(--warn); }
-  .card .sw { display: inline-block; width: 22px; height: 22px; border-radius: 5px; vertical-align: middle; margin-right: 8px; border: 1px solid #ffffff33; }
+  .card .sw { display: inline-block; width: 20px; height: 20px; border-radius: 3px; vertical-align: -2px; margin-right: 8px; border: 1px solid rgba(0,0,0,0.12); }
 
   /* ---------- intro / outro ---------- */
-  #intro, #outro { background: radial-gradient(1200px 600px at 50% 120%, #14223d 0%, var(--bg) 60%); }
+  #intro, #outro { background: #ffffff; }
+  #intro::before, #outro::before { content: ''; position: absolute; inset: 0; background: radial-gradient(760px 360px at 50% -120px, rgba(47,128,237,0.10), rgba(47,128,237,0) 70%); }
   .fx { opacity: 0; transform: translateY(14px); }
-  #intro .logo { position: absolute; left: 50%; top: 96px; transform: translateX(-50%); width: 340px; }
-  #intro .name { position: absolute; left: 0; right: 0; top: 326px; text-align: center; font-size: 34px; font-weight: 900; letter-spacing: -0.01em; }
-  #intro .name span { display: block; font-size: 15px; font-weight: 400; color: var(--muted); margin-top: 6px; letter-spacing: 0.06em; }
-  #intro .aff { position: absolute; left: 0; right: 0; top: 408px; text-align: center; font-size: 17px; color: var(--ink); }
-  #intro .aff b { color: var(--accent); }
-  #intro .mission { position: absolute; left: 160px; right: 160px; top: 458px; text-align: center; font-size: 19px; line-height: 1.55; color: #d6e0f0; }
-  #intro .mission b { color: var(--ink); font-weight: 900; }
-  #intro .pills { position: absolute; left: 0; right: 0; top: 548px; display: flex; justify-content: center; gap: 14px; }
-  #intro .pill { padding: 10px 18px; border-radius: 999px; border: 1px solid var(--line); background: #111b30; font-size: 15px; font-weight: 700; display: flex; align-items: center; gap: 10px; }
-  #intro .pill i { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
-  #intro .pill small { font-weight: 400; color: var(--muted); font-size: 12px; }
-  #intro .covers { position: absolute; left: 0; right: 0; top: 616px; display: flex; justify-content: center; gap: 10px; }
-  #intro .covers img { height: 78px; border-radius: 4px; border: 1px solid #ffffff22; box-shadow: 0 6px 18px #00000066; }
+  #intro .logo { position: absolute; left: 50%; top: 88px; transform: translateX(-50%); width: 300px; }
+  #intro .name { position: absolute; left: 0; right: 0; top: 328px; text-align: center; font-size: 34px; font-weight: 800; letter-spacing: -0.02em; color: var(--ink); }
+  #intro .name span { display: block; font-size: 15px; font-weight: 500; color: var(--muted); margin-top: 6px; letter-spacing: 0.04em; }
+  #intro .aff { position: absolute; left: 0; right: 0; top: 410px; text-align: center; font-size: 17px; color: var(--ink-soft); }
+  #intro .aff b { color: var(--accent); font-weight: 700; }
+  #intro .mission { position: absolute; left: 160px; right: 160px; top: 458px; text-align: center; font-size: 19px; line-height: 1.55; color: var(--ink-soft); }
+  #intro .mission b { color: var(--ink); font-weight: 800; }
+  #intro .pills { position: absolute; left: 0; right: 0; top: 552px; display: flex; justify-content: center; gap: 34px; }
+  #intro .pill { font-size: 15px; font-weight: 700; display: flex; align-items: center; gap: 9px; color: var(--ink); letter-spacing: 0.02em; }
+  #intro .pill i { width: 9px; height: 9px; border-radius: 50%; display: inline-block; }
+  #intro .pill small { font-weight: 500; color: var(--muted); font-size: 12px; letter-spacing: 0; }
+  #intro .covers { position: absolute; left: 0; right: 0; top: 614px; display: flex; justify-content: center; gap: 10px; }
+  #intro .covers img { height: 78px; border-radius: 2px; box-shadow: 0 6px 18px rgba(20,24,40,0.14); }
   #intro .covers .t { position: absolute; right: 60px; top: 30px; font-size: 12px; color: var(--muted); text-align: right; line-height: 1.5; }
   #intro .covers .t b { color: var(--ink); }
-  #intro .kicker { position: absolute; left: 0; right: 0; top: 60px; text-align: center; font-size: 13px; letter-spacing: 0.25em; color: var(--muted); }
+  #intro .kicker { position: absolute; left: 0; right: 0; top: 56px; text-align: center; font-size: 12px; letter-spacing: 0.28em; color: var(--muted); }
 
-  #outro .logo { position: absolute; left: 50%; top: 130px; transform: translateX(-50%); width: 300px; }
-  #outro .big { position: absolute; left: 0; right: 0; top: 350px; text-align: center; font-size: 36px; font-weight: 900; }
-  #outro .big span { display: block; font-size: 18px; font-weight: 400; color: var(--muted); margin-top: 10px; line-height: 1.6; }
-  #outro .url { position: absolute; left: 0; right: 0; top: 486px; text-align: center; font-size: 24px; font-weight: 700; color: var(--accent); letter-spacing: 0.03em; }
-  #outro .foot { position: absolute; left: 0; right: 0; top: 546px; text-align: center; font-size: 14px; color: var(--muted); line-height: 1.7; }
+  #outro .logo { position: absolute; left: 50%; top: 130px; transform: translateX(-50%); width: 270px; }
+  #outro .big { position: absolute; left: 0; right: 0; top: 350px; text-align: center; font-size: 36px; font-weight: 800; letter-spacing: -0.02em; color: var(--ink); }
+  #outro .big span { display: block; font-size: 18px; font-weight: 400; color: var(--ink-soft); margin-top: 12px; line-height: 1.6; }
+  #outro .url { position: absolute; left: 0; right: 0; top: 490px; text-align: center; font-size: 24px; font-weight: 700; color: var(--accent); letter-spacing: 0.02em; }
+  #outro .foot { position: absolute; left: 0; right: 0; top: 548px; text-align: center; font-size: 14px; color: var(--muted); line-height: 1.7; }
   #outro .foot b { color: var(--ink); }
 
   /* ---------- simulation scene ---------- */
-  .tools { position: absolute; display: flex; gap: 12px; }
-  .tool { flex: 1; border: 1px solid var(--line); border-radius: 8px; background: var(--panel2); padding: 9px 12px; }
+  .tools { position: absolute; display: flex; gap: 0; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+  .tool { flex: 1; padding: 10px 14px; border-right: 1px solid var(--line); }
+  .tool:last-child { border-right: 0; }
   .tool .k { font-size: 11px; color: var(--muted); }
-  .tool .v { font-size: 15px; font-weight: 900; margin-top: 2px; }
-  .tool .v span { font-weight: 400; color: var(--muted); font-size: 12px; margin-left: 6px; }
-  .tool .d { font-size: 11px; color: #c3cfe3; margin-top: 4px; line-height: 1.4; }
+  .tool .v { font-size: 15px; font-weight: 800; margin-top: 2px; letter-spacing: -0.01em; }
+  .tool .v span { font-weight: 500; color: var(--muted); font-size: 12px; margin-left: 6px; }
+  .tool .d { font-size: 11px; color: var(--ink-soft); margin-top: 4px; line-height: 1.4; }
   .loop { position: absolute; font-size: 12px; color: var(--muted); }
-  .loop b { color: var(--ok); }
 
   /* ---------- biosensor scene ---------- */
-  .zero { position: absolute; display: flex; gap: 8px; }
-  .zero div { flex: 1; border: 1px dashed #3a4c6f; border-radius: 8px; padding: 6px 4px; text-align: center; font-size: 11px; color: var(--muted); }
-  .zero div b { display: block; font-size: 18px; color: var(--ok); font-weight: 900; }
+  .zero { position: absolute; display: flex; gap: 0; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+  .zero div { flex: 1; padding: 6px 4px; text-align: center; font-size: 11px; color: var(--muted); border-right: 1px solid var(--line); }
+  .zero div:last-child { border-right: 0; }
+  .zero div b { display: block; font-size: 20px; color: var(--ok); font-weight: 800; letter-spacing: -0.02em; }
 </style>
 </head>
 <body>
@@ -114,15 +117,15 @@
   <!-- ================= INTRO ================= -->
   <section class="scene" id="intro">
     <div class="kicker fx" data-in="0.2">HANYANG UNIVERSITY ERICA · LIONS COLLEGE</div>
-    <img class="logo fx" data-in="0.4" src="../assets/logo-white.png" alt="SPEL" />
+    <img class="logo fx" data-in="0.4" src="../assets/logo-dark.png" alt="SPEL" />
     <div class="name fx" data-in="1.0">Soft Photonics &amp; Electro-optics Lab<span>소프트 포토닉스 및 전기광학 연구실 (SPEL)</span></div>
     <div class="aff fx" data-in="1.5">한양대학교 ERICA 차세대반도체융합공학부 · <b>남승민</b> 교수</div>
     <div class="mission fx" data-in="2.2">액정·고분자·엘라스토머 같은 <b>부드러운 소재</b>를 설계해<br/><b>빛(LIGHT)</b>, <b>에너지(ENERGY)</b>, <b>움직임(MOTION)</b>을 제어하는 차세대 소자를 만듭니다.</div>
     <div class="pills">
-      <div class="pill fx" data-in="3.0"><i style="background:#4da3ff"></i>LIGHT <small>가변 포토닉 소자</small></div>
-      <div class="pill fx" data-in="3.25"><i style="background:#ffb54d"></i>ENERGY <small>스마트 윈도우</small></div>
-      <div class="pill fx" data-in="3.5"><i style="background:#35d39a"></i>MOTION <small>소프트 액추에이터</small></div>
-      <div class="pill fx" data-in="3.75"><i style="background:#a78bfa"></i>INTELLIGENCE <small>시뮬레이션 · AI 설계</small></div>
+      <div class="pill fx" data-in="3.0"><i style="background:#2f80ed"></i>LIGHT <small>가변 포토닉 소자</small></div>
+      <div class="pill fx" data-in="3.25"><i style="background:#f5a623"></i>ENERGY <small>스마트 윈도우</small></div>
+      <div class="pill fx" data-in="3.5"><i style="background:#00c48c"></i>MOTION <small>소프트 액추에이터</small></div>
+      <div class="pill fx" data-in="3.75"><i style="background:#7b2ff7"></i>INTELLIGENCE <small>시뮬레이션 · AI 설계</small></div>
     </div>
     <div class="covers">
       <img class="fx" data-in="4.3" src="../assets/covers/lpr-2026.png" />
@@ -217,7 +220,7 @@
     </div>
     <div class="cards" style="left:924px; top:322px; width:328px">
       <div class="card"><div class="k">변형률 ε</div><div class="v" id="c3e">0 %</div><div class="bar"><i id="c3eb"></i></div></div>
-      <div class="card green"><div class="k">해독 상태</div><div class="v" id="c3s">🔒 숨김</div><div class="bar"><i id="c3sb"></i></div></div>
+      <div class="card green"><div class="k">해독 상태</div><div class="v" id="c3s">숨김</div><div class="bar"><i id="c3sb"></i></div></div>
       <div class="card pink"><div class="k">가시광 영역에 들어온 구역</div><div class="v" id="c3n">0 <small>/ 4 구역</small></div><div class="bar"><i id="c3nb"></i></div></div>
     </div>
 
@@ -245,7 +248,7 @@
       <div class="tool"><div class="k">광학</div><div class="v">FDTD 전자기 해석<span>Lumerical</span></div><div class="d">나선 구조가 어떤 파장을 얼마나 반사할지 계산</div></div>
       <div class="tool"><div class="k">역학</div><div class="v">다중물리 유한요소 해석<span>COMSOL · ABAQUS</span></div><div class="d">픽셀·두께·경계 설계에 따라 어디가 얼마나 늘어날지 예측</div></div>
       <div class="tool"><div class="k">데이터</div><div class="v">머신러닝 · 역설계<span>Python · MATLAB</span></div><div class="d">원하는 색·감도에서 거꾸로 구조를 찾고, 색→변형률 판독을 학습</div></div>
-      <div class="tool" style="border-color:#1f6a52"><div class="k">검증 지표 (오른쪽 영상)</div><div class="v" id="c4m">상관계수 0.81 · 평균오차 2.6 %</div><div class="d">정답 변형률 지도와 색으로 추정한 지도를 프레임마다 비교</div></div>
+      <div class="tool"><div class="k">검증 지표 (오른쪽 영상)</div><div class="v" id="c4m">상관계수 0.81 · 평균오차 2.6 %</div><div class="d">정답 변형률 지도와 색으로 추정한 지도를 프레임마다 비교</div></div>
     </div>
 
     <div class="banner">만들기 전에 계산하고, 만든 뒤에 비교한다 <span class="arr">→</span> <span class="hl">실험 횟수를 줄이고 설계 정확도를 높이는 연구 방식</span></div>
@@ -291,7 +294,7 @@
 
   <!-- ================= OUTRO ================= -->
   <section class="scene" id="outro">
-    <img class="logo fx" data-in="0.2" src="../assets/logo-white.png" alt="SPEL" />
+    <img class="logo fx" data-in="0.2" src="../assets/logo-dark.png" alt="SPEL" />
     <div class="big fx" data-in="0.8">Shape light with us<span>호기심과 열정, 도전 정신을 가진 학생이라면 전공에 관계없이 환영합니다.<br/>학부연구생 상시 모집 · 1학년도 환영</span></div>
     <div class="url fx" data-in="1.6">spel.hanyang.ac.kr</div>
     <div class="foot fx" data-in="2.0"><b>남승민</b> 교수 · namsm@hanyang.ac.kr · 한양대학교 ERICA 차세대반도체융합공학부<br/>Soft Photonics &amp; Electro-optics Lab</div>
@@ -381,20 +384,20 @@ function setClip(id, lt) {
 /* ---------------- spectrum chart (shared) ---------------- */
 function drawSpectrum(canvas, lam, opts = {}) {
   const c = canvas.getContext('2d'), W = canvas.width, H = canvas.height;
-  c.clearRect(0, 0, W, H); c.fillStyle = '#111b30'; c.fillRect(0, 0, W, H);
+  c.clearRect(0, 0, W, H); c.fillStyle = '#ffffff'; c.fillRect(0, 0, W, H);
   const x0 = 40, x1 = W - 16, y0 = 24, y1 = H - 34;
   const xmin = opts.xmin || 380, xmax = opts.xmax || 780;
   const X = (w) => x0 + (w - xmin) / (xmax - xmin) * (x1 - x0);
   for (let w = xmin; w < xmax; w += 2) { c.fillStyle = wl2rgb(w, 0.9); c.fillRect(X(w), y1 + 4, X(w + 2) - X(w) + 0.5, 6); }
   if (opts.visibleBox) {
-    c.fillStyle = 'rgba(77,163,255,0.08)'; c.fillRect(X(400), y0, X(700) - X(400), y1 - y0);
-    c.strokeStyle = 'rgba(77,163,255,0.5)'; c.setLineDash([4, 3]); c.strokeRect(X(400), y0, X(700) - X(400), y1 - y0); c.setLineDash([]);
-    c.fillStyle = '#4da3ff'; c.font = '10px "Noto Sans KR"'; c.textAlign = 'center';
+    c.fillStyle = 'rgba(52,82,224,0.06)'; c.fillRect(X(400), y0, X(700) - X(400), y1 - y0);
+    c.strokeStyle = 'rgba(52,82,224,0.45)'; c.setLineDash([4, 3]); c.strokeRect(X(400), y0, X(700) - X(400), y1 - y0); c.setLineDash([]);
+    c.fillStyle = '#3452e0'; c.font = '10px "Pretendard"'; c.textAlign = 'center';
     c.fillText('눈에 보이는 영역 (400–700 nm)', (X(400) + X(700)) / 2, y0 + 12);
-    c.fillStyle = '#8fa1bf'; c.fillText('적외선 (안 보임)', (X(700) + X(xmax)) / 2, y0 + 12);
+    c.fillStyle = '#7a8194'; c.fillText('적외선 (안 보임)', (X(700) + X(xmax)) / 2, y0 + 12);
   }
-  c.strokeStyle = '#33456a'; c.lineWidth = 1; c.beginPath(); c.moveTo(x0, y0); c.lineTo(x0, y1); c.lineTo(x1, y1); c.stroke();
-  c.fillStyle = '#8fa1bf'; c.font = '10px "Noto Sans KR"'; c.textAlign = 'center';
+  c.strokeStyle = '#d3d7e1'; c.lineWidth = 1; c.beginPath(); c.moveTo(x0, y0); c.lineTo(x0, y1); c.lineTo(x1, y1); c.stroke();
+  c.fillStyle = '#7a8194'; c.font = '10px "Pretendard"'; c.textAlign = 'center';
   for (let w = Math.ceil(xmin / 100) * 100; w <= xmax; w += 100) { c.fillText(w, X(w), H - 8); c.beginPath(); c.moveTo(X(w), y1); c.lineTo(X(w), y1 + 3); c.stroke(); }
   c.save(); c.translate(12, (y0 + y1) / 2); c.rotate(-Math.PI / 2); c.fillText('반사율', 0, 0); c.restore();
   c.textAlign = 'left'; c.fillText('파장 (nm)', x0, 14);
@@ -408,9 +411,9 @@ function drawSpectrum(canvas, lam, opts = {}) {
       w === xmin ? c.moveTo(x, y) : c.lineTo(x, y);
     }
     c.lineTo(X(xmax), y1); c.lineTo(X(xmin), y1); c.closePath();
-    c.fillStyle = pk > 700 ? 'rgba(143,161,191,0.25)' : rgba(col, 0.55); c.fill();
-    c.strokeStyle = pk > 700 ? '#8fa1bf' : col; c.lineWidth = 2; c.stroke();
-    c.fillStyle = pk > 700 ? '#8fa1bf' : '#fff'; c.font = 'bold 11px "Noto Sans KR"'; c.textAlign = 'center';
+    c.fillStyle = pk > 700 ? 'rgba(122,129,148,0.18)' : rgba(col, 0.55); c.fill();
+    c.strokeStyle = pk > 700 ? '#7a8194' : col; c.lineWidth = 2; c.stroke();
+    c.fillStyle = pk > 700 ? '#7a8194' : '#191d26'; c.font = 'bold 11px "Pretendard"'; c.textAlign = 'center';
     const lab = opts.labels ? opts.labels[pi] : `${pk.toFixed(0)} nm`;
     c.fillText(lab, clamp(X(pk), x0 + 22, x1 - 22), y0 + (opts.visibleBox ? 30 : 12) + (opts.labels ? (pi % 2) * 12 : 0));
   });
@@ -437,7 +440,7 @@ function drawFilm1(e) {
     <rect x="${cx + w/2 + clampW}" y="${cy - 6}" width="40" height="12" fill="#6b7382"/>
     <rect x="${cx - w/2}" y="${cy - h/2}" width="${w}" height="${h}" rx="4" fill="url(#g1)"/>
     <rect x="${cx - w/2}" y="${cy - h/2}" width="${w}" height="${h}" rx="4" fill="url(#sheen)"/>
-    <text x="${cx}" y="${cy + h/2 + 34}" text-anchor="middle" font-size="12" fill="#cbd5e1">← ${e > 0.02 ? '인장 중' : '이완 상태'} ε = ${fmt(e*100,0)} % →</text>`;
+    <text x="${cx}" y="${cy + h/2 + 34}" text-anchor="middle" font-size="12" fill="#c7ccd8">← ${e > 0.02 ? '인장 중' : '이완 상태'} ε = ${fmt(e*100,0)} % →</text>`;
 }
 function drawHelix1(e) {
   const svg = $('helix1');
@@ -447,40 +450,40 @@ function drawHelix1(e) {
   for (let i = 0; i < layers; i++) {
     const y = top + i * dz, ang = i * Math.PI / 6, L = 84;
     const dx = L / 2 * Math.cos(ang), dy = L / 2 * Math.sin(ang) * 0.32;
-    rods += `<line x1="${cx - dx}" y1="${y - dy}" x2="${cx + dx}" y2="${y + dy}" stroke="${i % 12 === 0 ? '#fde68a' : '#93c5fd'}" stroke-width="7" stroke-linecap="round" opacity="0.95"/>`;
+    rods += `<line x1="${cx - dx}" y1="${y - dy}" x2="${cx + dx}" y2="${y + dy}" stroke="${i % 12 === 0 ? '#d97b06' : '#2f80ed'}" stroke-width="7" stroke-linecap="round" opacity="0.9"/>`;
   }
   const yP0 = top, yP1 = top + 12 * dz, totalH = (layers - 1) * dz;
   svg.innerHTML = `
-    <rect x="0" y="0" width="456" height="498" fill="#0e1729"/>
-    <text x="24" y="40" fill="#8fa1bf" font-size="12">액정 분자(막대)가 층마다 조금씩 회전하며 쌓임 → 나선 구조</text>
-    <text x="24" y="62" fill="#e2e8f0" font-size="13" font-weight="700">한 바퀴 도는 길이 = 피치 P (노란 막대 → 다음 노란 막대)</text>
-    <path d="M ${cx - 70} ${top - 14} H ${cx + 70} M ${cx - 70} ${top + totalH + 14} H ${cx + 70}" stroke="#33456a"/>
-    <text x="${cx}" y="${top + totalH + 32}" text-anchor="middle" fill="#8fa1bf" font-size="11">필름 두께 방향 ↕</text>
+    <rect x="0" y="0" width="456" height="498" fill="#f6f7fa"/>
+    <text x="24" y="40" fill="#7a8194" font-size="12">액정 분자(막대)가 층마다 조금씩 회전하며 쌓임 → 나선 구조</text>
+    <text x="24" y="62" fill="#191d26" font-size="13" font-weight="700">한 바퀴 도는 길이 = 피치 P (노란 막대 → 다음 노란 막대)</text>
+    <path d="M ${cx - 70} ${top - 14} H ${cx + 70} M ${cx - 70} ${top + totalH + 14} H ${cx + 70}" stroke="#d3d7e1"/>
+    <text x="${cx}" y="${top + totalH + 32}" text-anchor="middle" fill="#7a8194" font-size="11">필름 두께 방향 ↕</text>
     ${rods}
-    <path d="M ${cx + 66} ${yP0} h 14 M ${cx + 66} ${yP1} h 14 M ${cx + 73} ${yP0} V ${yP1}" stroke="#fde68a" stroke-width="1.5" fill="none"/>
-    <text x="${cx + 73}" y="${yP1 + 18}" text-anchor="middle" fill="#fde68a" font-size="12" font-weight="700">P = ${fmt(P, 0)} nm</text>
+    <path d="M ${cx + 66} ${yP0} h 14 M ${cx + 66} ${yP1} h 14 M ${cx + 73} ${yP0} V ${yP1}" stroke="#d97b06" stroke-width="1.5" fill="none"/>
+    <text x="${cx + 73}" y="${yP1 + 18}" text-anchor="middle" fill="#d97b06" font-size="12" font-weight="700">P = ${fmt(P, 0)} nm</text>
     <g transform="translate(262,92)">
-      <rect x="0" y="0" width="170" height="112" rx="8" fill="#111b30" stroke="#24334f"/>
-      <text x="85" y="22" text-anchor="middle" fill="#8fa1bf" font-size="11">Bragg 반사 조건</text>
-      <text x="85" y="50" text-anchor="middle" fill="#e2e8f0" font-size="20" font-weight="900">λ = n · P</text>
-      <text x="85" y="70" text-anchor="middle" fill="#8fa1bf" font-size="11">n ≈ ${N_AVG} (평균 굴절률)</text>
+      <rect x="0" y="0" width="170" height="112" rx="8" fill="#ffffff" stroke="#e7e9f0"/>
+      <text x="85" y="22" text-anchor="middle" fill="#7a8194" font-size="11">Bragg 반사 조건</text>
+      <text x="85" y="50" text-anchor="middle" fill="#191d26" font-size="20" font-weight="900">λ = n · P</text>
+      <text x="85" y="70" text-anchor="middle" fill="#7a8194" font-size="11">n ≈ ${N_AVG} (평균 굴절률)</text>
       <rect x="35" y="80" width="100" height="22" rx="5" fill="${col}"/>
       <text x="85" y="96" text-anchor="middle" fill="#0b1220" font-size="12" font-weight="900">λ = ${fmt(lambdaOf(L0, e), 0)} nm</text>
     </g>
     <g transform="translate(262,218)">
-      <rect x="0" y="0" width="170" height="104" rx="8" fill="#111b30" stroke="#24334f"/>
-      <text x="85" y="22" text-anchor="middle" fill="#8fa1bf" font-size="11">옆으로 늘리면 (변형률 ε)</text>
-      <text x="85" y="44" text-anchor="middle" fill="#e2e8f0" font-size="12">고무가 얇아지면서</text>
-      <text x="85" y="62" text-anchor="middle" fill="#e2e8f0" font-size="12">나선도 같이 눌린다</text>
-      <text x="85" y="90" text-anchor="middle" fill="#fde68a" font-size="14" font-weight="900">P ↓ → λ ↓ (청색 이동)</text>
+      <rect x="0" y="0" width="170" height="104" rx="8" fill="#ffffff" stroke="#e7e9f0"/>
+      <text x="85" y="22" text-anchor="middle" fill="#7a8194" font-size="11">옆으로 늘리면 (변형률 ε)</text>
+      <text x="85" y="44" text-anchor="middle" fill="#191d26" font-size="12">고무가 얇아지면서</text>
+      <text x="85" y="62" text-anchor="middle" fill="#191d26" font-size="12">나선도 같이 눌린다</text>
+      <text x="85" y="90" text-anchor="middle" fill="#d97b06" font-size="14" font-weight="900">P ↓ → λ ↓ (청색 이동)</text>
     </g>
     <g transform="translate(262,338)">
-      <rect x="0" y="0" width="170" height="120" rx="8" fill="#111b30" stroke="#24334f"/>
-      <text x="14" y="22" fill="#8fa1bf" font-size="11">피치 비교</text>
-      <rect x="14" y="34" width="${P0 * 0.36}" height="12" rx="3" fill="#3b4c6e"/>
-      <text x="14" y="62" fill="#8fa1bf" font-size="11">이완 P₀ = ${fmt(P0, 0)} nm</text>
+      <rect x="0" y="0" width="170" height="120" rx="8" fill="#ffffff" stroke="#e7e9f0"/>
+      <text x="14" y="22" fill="#7a8194" font-size="11">피치 비교</text>
+      <rect x="14" y="34" width="${P0 * 0.36}" height="12" rx="3" fill="#cfd4de"/>
+      <text x="14" y="62" fill="#7a8194" font-size="11">이완 P₀ = ${fmt(P0, 0)} nm</text>
       <rect x="14" y="74" width="${P * 0.36}" height="12" rx="3" fill="${col}"/>
-      <text x="14" y="102" fill="#e2e8f0" font-size="11" font-weight="700">현재 P = ${fmt(P, 0)} nm (${fmt((1 - P / P0) * 100, 0)} % 감소)</text>
+      <text x="14" y="102" fill="#191d26" font-size="11" font-weight="700">현재 P = ${fmt(P, 0)} nm (${fmt((1 - P / P0) * 100, 0)} % 감소)</text>
     </g>`;
 }
 function scene1(lt, dur) {
@@ -513,34 +516,34 @@ function drawGrid2(e) {
   const gw = 3 * s + 2 * gap;
   svg.innerHTML = `
     <defs><linearGradient id="sh2" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#fff" stop-opacity="0.28"/><stop offset="0.5" stop-color="#fff" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity="0.18"/></linearGradient></defs>
-    <rect x="0" y="0" width="456" height="498" fill="#0e1729"/>
-    <text x="24" y="40" fill="#8fa1bf" font-size="12">픽셀마다 '얼마나 잘 늘어나는지'를 설계 계수로 정해 둠 (두께 · 경계 강성)</text>
-    <text x="24" y="62" fill="#e2e8f0" font-size="13" font-weight="700">필름 전체 변형률 ε = ${fmt(e*100,0)} %  →  픽셀별 국소 변형률 = 계수 × ε</text>
+    <rect x="0" y="0" width="456" height="498" fill="#f6f7fa"/>
+    <text x="24" y="40" fill="#7a8194" font-size="12">픽셀마다 '얼마나 잘 늘어나는지'를 설계 계수로 정해 둠 (두께 · 경계 강성)</text>
+    <text x="24" y="62" fill="#191d26" font-size="13" font-weight="700">필름 전체 변형률 ε = ${fmt(e*100,0)} %  →  픽셀별 국소 변형률 = 계수 × ε</text>
     ${cells}
-    <g fill="#8fa1bf" font-size="11">
-      <text x="${ox - 20}" y="${oy + 140}" text-anchor="end" fill="#4da3ff" font-weight="700">←</text>
-      <text x="${ox + gw + 20}" y="${oy + 140}" fill="#4da3ff" font-weight="700">→</text>
+    <g fill="#7a8194" font-size="11">
+      <text x="${ox - 20}" y="${oy + 140}" text-anchor="end" fill="#3452e0" font-weight="700">←</text>
+      <text x="${ox + gw + 20}" y="${oy + 140}" fill="#3452e0" font-weight="700">→</text>
     </g>
     <g transform="translate(24,418)">
-      <rect x="0" y="0" width="408" height="60" rx="8" fill="#111b30" stroke="#24334f"/>
-      <text x="16" y="24" fill="#e2e8f0" font-size="12">설계 계수가 클수록 많이 늘어나 <tspan fill="#35d39a" font-weight="700">초록·파랑</tspan>, 작을수록 <tspan fill="#ff6b6b" font-weight="700">빨강</tspan>에 머무름</text>
-      <text x="16" y="46" fill="#8fa1bf" font-size="11">하나의 입력(전체 인장)으로 아홉 개의 서로 다른 출력(색) → 매트릭스 구동 픽셀 광소자</text>
+      <rect x="0" y="0" width="408" height="60" rx="8" fill="#ffffff" stroke="#e7e9f0"/>
+      <text x="16" y="24" fill="#191d26" font-size="12">설계 계수가 클수록 많이 늘어나 <tspan fill="#0f9d6e" font-weight="700">초록·파랑</tspan>, 작을수록 <tspan fill="#e03131" font-weight="700">빨강</tspan>에 머무름</text>
+      <text x="16" y="46" fill="#7a8194" font-size="11">하나의 입력(전체 인장)으로 아홉 개의 서로 다른 출력(색) → 매트릭스 구동 픽셀 광소자</text>
     </g>`;
 }
 function drawBars2(canvas, lams) {
   const c = canvas.getContext('2d'), W = canvas.width, H = canvas.height;
-  c.clearRect(0, 0, W, H); c.fillStyle = '#111b30'; c.fillRect(0, 0, W, H);
+  c.clearRect(0, 0, W, H); c.fillStyle = '#ffffff'; c.fillRect(0, 0, W, H);
   const x0 = 40, x1 = W - 14, y0 = 26, y1 = H - 30;
   const Y = (l) => y1 - (l - 500) / (680 - 500) * (y1 - y0);
-  c.strokeStyle = '#33456a'; c.beginPath(); c.moveTo(x0, y0); c.lineTo(x0, y1); c.lineTo(x1, y1); c.stroke();
-  c.fillStyle = '#8fa1bf'; c.font = '10px "Noto Sans KR"'; c.textAlign = 'right';
+  c.strokeStyle = '#d3d7e1'; c.beginPath(); c.moveTo(x0, y0); c.lineTo(x0, y1); c.lineTo(x1, y1); c.stroke();
+  c.fillStyle = '#7a8194'; c.font = '10px "Pretendard"'; c.textAlign = 'right';
   for (let l = 500; l <= 680; l += 60) c.fillText(l, x0 - 4, Y(l) + 3);
   c.textAlign = 'left'; c.fillText('반사 파장 (nm) · 픽셀 1–9', x0, 14);
   const bw = (x1 - x0) / 9;
   lams.forEach((l, i) => {
     const col = wl2rgb(l); c.fillStyle = col;
     c.fillRect(x0 + i * bw + 4, Y(l), bw - 8, y1 - Y(l));
-    c.fillStyle = '#8fa1bf'; c.textAlign = 'center'; c.fillText(i + 1, x0 + i * bw + bw / 2, H - 12);
+    c.fillStyle = '#7a8194'; c.textAlign = 'center'; c.fillText(i + 1, x0 + i * bw + bw / 2, H - 12);
   });
 }
 function scene2(lt, dur) {
@@ -565,30 +568,30 @@ function drawCross3(e) {
     const lam = lambdaOf(p.l0, e), vis = lam <= 700, col = wl2rgb(lam);
     const th = 34 + i * 14, x = 40 + i * 96, w = 84;
     const n = Math.round(th / (lam / 60)); const lines = [];
-    for (let j = 0; j < n; j++) lines.push(`<line x1="${x}" y1="${baseY - th + j * (th / n)}" x2="${x + w}" y2="${baseY - th + j * (th / n)}" stroke="${vis ? col : '#3b4c6e'}" stroke-width="1"/>`);
+    for (let j = 0; j < n; j++) lines.push(`<line x1="${x}" y1="${baseY - th + j * (th / n)}" x2="${x + w}" y2="${baseY - th + j * (th / n)}" stroke="${vis ? col : '#cfd4de'}" stroke-width="1"/>`);
     return `<g>
-      <rect x="${x}" y="${baseY - th}" width="${w}" height="${th}" fill="${vis ? col : '#1c2740'}" opacity="${vis ? 0.35 : 1}"/>
+      <rect x="${x}" y="${baseY - th}" width="${w}" height="${th}" fill="${vis ? col : '#eceef3'}" opacity="${vis ? 0.35 : 1}"/>
       ${lines.join('')}
-      <rect x="${x}" y="${baseY - th}" width="${w}" height="${th}" fill="none" stroke="#5b6b8a"/>
-      <text x="${x + w/2}" y="${baseY + 18}" text-anchor="middle" fill="#e2e8f0" font-size="13" font-weight="900">${p.ch}</text>
-      <text x="${x + w/2}" y="${baseY + 34}" text-anchor="middle" fill="#8fa1bf" font-size="10">두께 ${th}</text>
-      <text x="${x + w/2}" y="${baseY - th - 8}" text-anchor="middle" fill="${vis ? col : '#8fa1bf'}" font-size="11" font-weight="700">${fmt(lam,0)} nm ${vis ? '' : '(IR)'}</text>
+      <rect x="${x}" y="${baseY - th}" width="${w}" height="${th}" fill="none" stroke="#9aa1b1"/>
+      <text x="${x + w/2}" y="${baseY + 18}" text-anchor="middle" fill="#191d26" font-size="13" font-weight="900">${p.ch}</text>
+      <text x="${x + w/2}" y="${baseY + 34}" text-anchor="middle" fill="#7a8194" font-size="10">두께 ${th}</text>
+      <text x="${x + w/2}" y="${baseY - th - 8}" text-anchor="middle" fill="${vis ? col : '#7a8194'}" font-size="11" font-weight="700">${fmt(lam,0)} nm ${vis ? '' : '(IR)'}</text>
     </g>`;
   }).join('');
   svg.innerHTML = `
-    <rect x="0" y="0" width="456" height="498" fill="#0e1729"/>
-    <text x="24" y="40" fill="#8fa1bf" font-size="12">단면도 · 그림 부위마다 필름 두께(=나선 층 수)를 다르게 설계</text>
-    <text x="24" y="62" fill="#e2e8f0" font-size="13" font-weight="700">같은 힘으로 당겨도 부위마다 색이 다르게 나타난다</text>
-    <line x1="24" y1="${baseY}" x2="432" y2="${baseY}" stroke="#5b6b8a" stroke-width="2"/>
-    <text x="24" y="${baseY + 52}" fill="#5d6f8f" font-size="10">▬ 신축성 기판 위에 올린 CLCE 필름 단면 (두께: 상대값)</text>
+    <rect x="0" y="0" width="456" height="498" fill="#f6f7fa"/>
+    <text x="24" y="40" fill="#7a8194" font-size="12">단면도 · 그림 부위마다 필름 두께(=나선 층 수)를 다르게 설계</text>
+    <text x="24" y="62" fill="#191d26" font-size="13" font-weight="700">같은 힘으로 당겨도 부위마다 색이 다르게 나타난다</text>
+    <line x1="24" y1="${baseY}" x2="432" y2="${baseY}" stroke="#9aa1b1" stroke-width="2"/>
+    <text x="24" y="${baseY + 52}" fill="#a3a9b8" font-size="10">▬ 신축성 기판 위에 올린 CLCE 필름 단면 (두께: 상대값)</text>
     ${seg}
     <g transform="translate(24,318)">
-      <rect x="0" y="0" width="408" height="150" rx="8" fill="#111b30" stroke="#24334f"/>
-      <text x="16" y="26" fill="#8fa1bf" font-size="11">설계 아이디어</text>
-      <text x="16" y="52" fill="#e2e8f0" font-size="13">① 이완 상태의 반사 파장을 <tspan fill="#fde68a" font-weight="700">적외선(&gt;700 nm)</tspan>에 숨긴다 → 투명해 보임</text>
-      <text x="16" y="78" fill="#e2e8f0" font-size="13">② 당기면 파장이 짧아져 <tspan fill="#4da3ff" font-weight="700">가시광</tspan>으로 들어온다 → 그림이 나타남</text>
-      <text x="16" y="104" fill="#e2e8f0" font-size="13">③ 두께로 부위별 시작 파장을 <tspan fill="#ff6b9a" font-weight="700">프로그래밍</tspan> → 열쇠(변형률)마다 다른 답</text>
-      <text x="16" y="132" fill="#8fa1bf" font-size="11">얼마나 당기느냐가 '비밀번호'가 되는 광 암호화 · 카멜레온식 광학 위장</text>
+      <rect x="0" y="0" width="408" height="150" rx="8" fill="#ffffff" stroke="#e7e9f0"/>
+      <text x="16" y="26" fill="#7a8194" font-size="11">설계 아이디어</text>
+      <text x="16" y="52" fill="#191d26" font-size="13">① 이완 상태의 반사 파장을 <tspan fill="#d97b06" font-weight="700">적외선(&gt;700 nm)</tspan>에 숨긴다 → 투명해 보임</text>
+      <text x="16" y="78" fill="#191d26" font-size="13">② 당기면 파장이 짧아져 <tspan fill="#3452e0" font-weight="700">가시광</tspan>으로 들어온다 → 그림이 나타남</text>
+      <text x="16" y="104" fill="#191d26" font-size="13">③ 두께로 부위별 시작 파장을 <tspan fill="#d6336c" font-weight="700">프로그래밍</tspan> → 열쇠(변형률)마다 다른 답</text>
+      <text x="16" y="132" fill="#7a8194" font-size="11">얼마나 당기느냐가 '비밀번호'가 되는 광 암호화 · 카멜레온식 광학 위장</text>
     </g>`;
 }
 function scene3(lt, dur) {
@@ -597,7 +600,7 @@ function scene3(lt, dur) {
   const nvis = lams.filter((l) => l <= 700).length;
   drawCross3(e); drawSpectrum($('spec3'), lams, { xmin: 380, xmax: 960, visibleBox: true, labels: ['', '', '', ''] }); setClip('clip-s3', lt);
   $('c3e').textContent = fmt(e * 100, 0) + ' %'; setBar('c3eb', e / 0.9);
-  $('c3s').textContent = nvis === 0 ? '🔒 숨김' : nvis < 4 ? '🔓 해독 중' : '✅ 해독 완료'; setBar('c3sb', nvis / 4);
+  $('c3s').textContent = nvis === 0 ? '숨김' : nvis < 4 ? '해독 중' : '해독 완료'; setBar('c3sb', nvis / 4);
   $('c3n').innerHTML = `${nvis} <small>/ 4 구역</small>`; setBar('c3nb', nvis / 4);
   setProg(3, lt, dur);
 }
@@ -621,9 +624,9 @@ function drawHand5(deg) {
   const a0 = -Math.PI / 2 - 0.9, a1 = -Math.PI / 2 + 0.9 + a;
   const arc = (rr, s, t) => `M ${kx + rr * Math.cos(s)} ${ky + rr * Math.sin(s)} A ${rr} ${rr} 0 ${t - s > Math.PI ? 1 : 0} 1 ${kx + rr * Math.cos(t)} ${ky + rr * Math.sin(t)}`;
   svg.innerHTML = `
-    <rect x="0" y="0" width="300" height="498" fill="#0e1729"/>
-    <text x="20" y="34" fill="#8fa1bf" font-size="12">관절이 굽으면 패치가 늘어나고</text>
-    <text x="20" y="54" fill="#e2e8f0" font-size="13" font-weight="700">늘어난 만큼 색이 바뀐다</text>
+    <rect x="0" y="0" width="300" height="498" fill="#f6f7fa"/>
+    <text x="20" y="34" fill="#7a8194" font-size="12">관절이 굽으면 패치가 늘어나고</text>
+    <text x="20" y="54" fill="#191d26" font-size="13" font-weight="700">늘어난 만큼 색이 바뀐다</text>
     <rect x="${p1x - 60}" y="${ky - 56}" width="70" height="140" rx="24" fill="${skinD}"/>
     <line x1="${p1x}" y1="${ky}" x2="${kx}" y2="${ky}" stroke="${skin}" stroke-width="${r*2}" stroke-linecap="round"/>
     <line x1="${kx}" y1="${ky}" x2="${p2x}" y2="${p2y}" stroke="${skin}" stroke-width="${r*2}" stroke-linecap="round"/>
@@ -631,21 +634,21 @@ function drawHand5(deg) {
     <path d="${arc(r - 6, -Math.PI/2 - 0.6, -Math.PI/2 + 0.6 + a)}" stroke="${skinD}" stroke-width="2" fill="none" opacity="0.6"/>
     <path d="${arc(patchR, a0, a1)}" stroke="${col}" stroke-width="13" stroke-linecap="round" fill="none"/>
     <path d="${arc(patchR, a0, a1)}" stroke="#fff" stroke-width="3" stroke-linecap="round" fill="none" opacity="0.25" transform="translate(0,-4)"/>
-    <text x="${kx}" y="${ky - patchR - 24}" text-anchor="middle" fill="#e2e8f0" font-size="12">CLCE 패치 · ${fmt(lam,0)} nm</text>
-    <line x1="${kx}" y1="${ky - patchR - 18}" x2="${kx}" y2="${ky - patchR - 6}" stroke="#8fa1bf"/>
+    <text x="${kx}" y="${ky - patchR - 24}" text-anchor="middle" fill="#191d26" font-size="12">CLCE 패치 · ${fmt(lam,0)} nm</text>
+    <line x1="${kx}" y1="${ky - patchR - 18}" x2="${kx}" y2="${ky - patchR - 6}" stroke="#7a8194"/>
     <g transform="translate(20,400)">
-      <text x="0" y="0" fill="#8fa1bf" font-size="11">판독 순서</text>
-      <text x="0" y="22" fill="#e2e8f0" font-size="12">📷 촬영 → 색(파장) 추출 → 교정 곡선 → <tspan fill="#ffb54d" font-weight="700">변형률 · 각도</tspan></text>
-      <text x="0" y="48" fill="#8fa1bf" font-size="11">색과 변형률은 물리식(λ = n·P)으로 1:1 대응</text>
-      <text x="0" y="66" fill="#8fa1bf" font-size="11">→ 여러 관절을 사진 한 장으로 동시에 판독</text>
+      <text x="0" y="0" fill="#7a8194" font-size="11">판독 순서</text>
+      <text x="0" y="22" fill="#191d26" font-size="12">촬영 → 색(파장) 추출 → 교정 곡선 → <tspan fill="#d97b06" font-weight="700">변형률 · 각도</tspan></text>
+      <text x="0" y="48" fill="#7a8194" font-size="11">색과 변형률은 물리식(λ = n·P)으로 1:1 대응</text>
+      <text x="0" y="66" fill="#7a8194" font-size="11">→ 여러 관절을 사진 한 장으로 동시에 판독</text>
     </g>`;
 }
 function drawTrace5(canvas, lt, deg) {
   const c = canvas.getContext('2d'), W = canvas.width, H = canvas.height;
-  c.clearRect(0, 0, W, H); c.fillStyle = '#111b30'; c.fillRect(0, 0, W, H);
+  c.clearRect(0, 0, W, H); c.fillStyle = '#ffffff'; c.fillRect(0, 0, W, H);
   const x0 = 36, x1 = W - 12, y0 = 22, y1 = H - 26, win = 16;
-  c.strokeStyle = '#33456a'; c.beginPath(); c.moveTo(x0, y0); c.lineTo(x0, y1); c.lineTo(x1, y1); c.stroke();
-  c.fillStyle = '#8fa1bf'; c.font = '10px "Noto Sans KR"'; c.textAlign = 'right';
+  c.strokeStyle = '#d3d7e1'; c.beginPath(); c.moveTo(x0, y0); c.lineTo(x0, y1); c.lineTo(x1, y1); c.stroke();
+  c.fillStyle = '#7a8194'; c.font = '10px "Pretendard"'; c.textAlign = 'right';
   [0, 30, 60].forEach((v) => c.fillText(v + '%', x0 - 4, y1 - v / 60 * (y1 - y0) + 3));
   c.textAlign = 'left'; c.fillText('변형률 ε (시간)', x0, 14);
   c.textAlign = 'center'; for (let s = 0; s <= win; s += 4) c.fillText(s + 's', x0 + s / win * (x1 - x0), H - 8);
@@ -656,7 +659,7 @@ function drawTrace5(canvas, lt, deg) {
     c.beginPath(); c.moveTo(x0 + s / win * (x1 - x0), y1 - e1 / 0.6 * (y1 - y0)); c.lineTo(x0 + (s + 0.05) / win * (x1 - x0), y1 - e2 / 0.6 * (y1 - y0)); c.stroke();
   }
   const e = strainOfAngle(deg);
-  c.fillStyle = '#fff'; c.beginPath(); c.arc(x0 + lt / win * (x1 - x0), y1 - e / 0.6 * (y1 - y0), 4, 0, Math.PI * 2); c.fill();
+  c.fillStyle = '#191d26'; c.beginPath(); c.arc(x0 + lt / win * (x1 - x0), y1 - e / 0.6 * (y1 - y0), 4, 0, Math.PI * 2); c.fill();
 }
 function scene5(lt, dur) {
   const deg = angle5(lt), e = strainOfAngle(deg), lam = lambdaOf(L0_5, e);

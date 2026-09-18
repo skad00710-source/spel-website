@@ -23,11 +23,11 @@ const FFMPEG = process.env.FFMPEG || 'ffmpeg';
 mkdirSync(OUT, { recursive: true });
 
 // local font override (fonts/ is git-ignored; see README)
-let fontCss = null;
-const fontCssPath = join(here, 'fonts', 'nskr.css');
-if (existsSync(fontCssPath)) {
-  fontCss = readFileSync(fontCssPath, 'utf8').replace(/url\((nskr-[^)]+)\)/g, (m, f) => `url(file://${join(here, 'fonts', f)})`);
-}
+let fontCss = '';
+const nskr = join(here, 'fonts', 'nskr.css');
+if (existsSync(nskr)) fontCss += readFileSync(nskr, 'utf8').replace(/url\((nskr-[^)]+)\)/g, (m, f) => `url(file://${join(here, 'fonts', f)})`);
+const pret = join(here, 'fonts', 'pretendard', 'pretendard.css');
+if (existsSync(pret)) fontCss += readFileSync(pret, 'utf8').replace(/url\(["']?(\.\/)?(woff2-dynamic-subset\/[^"')]+)["']?\)/g, (m, d, f) => `url(file://${join(here, 'fonts', 'pretendard', f)})`);
 
 const browser = await chromium.launch();
 const page = await browser.newPage({ viewport: { width: 1280, height: 720 }, deviceScaleFactor: 1 });

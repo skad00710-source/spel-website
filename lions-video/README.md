@@ -2,7 +2,8 @@
 
 1학년 대상 설명회용 무음 영상(1280×720, 24 fps, 약 85초). 노동규 교수님 자료와 같은
 포맷을 따릅니다: 상단 제목, **실제 영상 × 시뮬레이션** 병렬 패널, 우측 실시간 판독 카드,
-하단 한 줄 메시지, 재생 진행 바.
+하단 한 줄 메시지, 재생 진행 바. 색·폰트는 연구실 홈페이지(`css/style.css`)의 라이트 테마
+토큰(ink #191d26, accent #3452e0, 스펙트럼 그라데이션, Pretendard)을 그대로 씁니다.
 
 ## 구성 (타임라인)
 
@@ -35,8 +36,9 @@ NODE_PATH=$(npm root -g) node render.mjs --stills 5,30   # 특정 시점 정지 
 ```
 
 요구 사항: Node 18+, `npm i -g playwright && npx playwright install chromium`, `ffmpeg`
-(다른 경로면 `FFMPEG=/path/to/ffmpeg`). 한글 폰트는 Google Fonts(Noto Sans KR)를 쓰며,
-오프라인 렌더링이 필요하면 `fonts/nskr.css`(+woff2)를 두면 자동으로 사용합니다.
+(다른 경로면 `FFMPEG=/path/to/ffmpeg`). 폰트는 Pretendard(`npm pack pretendard` → `dist/web/static`의
+`pretendard-dynamic-subset.css`와 `woff2-dynamic-subset/`를 `fonts/pretendard/`에 두고 css 이름을
+`pretendard.css`로) 를 우선 쓰고, 없으면 Noto Sans KR(`fonts/nskr.css`) → 시스템 폰트 순으로 대체합니다.
 
 ## 클립 교체 방법
 
