@@ -31,7 +31,7 @@
   .panel.dark { background: #05070c; }
   .panel.light { background: #fff; }
   .panel > img.clip { position: absolute; left: 0; top: 0; }
-  .banner { position: absolute; left: 28px; right: 28px; bottom: 58px; height: 46px; border-radius: 10px;
+  .banner { position: absolute; left: 28px; right: 28px; bottom: 74px; height: 44px; border-radius: 10px;
     background: #15223a; border: 1px solid #2a3d5e; display: flex; align-items: center; justify-content: center;
     font-size: 19px; font-weight: 700; letter-spacing: -0.01em; white-space: nowrap; }
   .banner .arr { color: var(--accent); margin: 0 10px; font-weight: 900; }
@@ -40,9 +40,9 @@
   .prog .bar { position: absolute; left: 0; right: 0; top: 8px; height: 2px; background: #223252; }
   .prog .fill { position: absolute; left: 0; top: 8px; height: 2px; background: var(--accent); }
   .prog .now { position: absolute; top: 2px; width: 2px; height: 14px; background: var(--warn); }
-  .prog .tm { position: absolute; left: 0; top: -20px; font-size: 12px; color: var(--muted); }
+  .prog .tm { position: absolute; left: 0; top: -22px; font-size: 12px; color: var(--muted); }
   .prog .tm b { color: var(--ink); }
-  .prog .src { position: absolute; right: 0; top: -20px; font-size: 11px; color: var(--dim); }
+  .prog .src { position: absolute; right: 0; top: -22px; font-size: 11px; color: var(--dim); }
   .cap { position: absolute; left: 0; right: 0; bottom: 0; padding: 9px 12px 8px; background: rgba(6,10,20,0.96);
     font-size: 12px; color: var(--muted); line-height: 1.45; border-top: 1px solid #1c2740; }
   .cap b { color: var(--ink); display: block; font-size: 13px; }
@@ -264,8 +264,11 @@
     </div>
 
     <div class="lbl" style="left:612px; top:78px"><b>응용 시뮬레이션</b> · 관절 위 CLCE 패치</div>
-    <div class="panel" style="left:612px; top:98px; width:300px; height:498px">
+    <div class="panel dark" style="left:612px; top:98px; width:300px; height:498px">
+      <img class="clip" id="clip-s5b" width="300" height="498" style="display:none" />
       <svg id="hand5" viewBox="0 0 300 498" width="300" height="498"></svg>
+      <div class="chip" id="chip-s5b" style="display:none">실험 영상 · 웨어러블 적용</div>
+      <div class="cap" id="cap-s5b" style="display:none"><b>관절 위에 붙인 CLCE 패치</b>굽힐수록 색이 바뀌고, 그 색을 카메라로 읽어 <i>변형률·각도</i>로 환산</div>
     </div>
 
     <div class="lbl" style="left:936px; top:78px"><b>실시간 판독</b> · 변형률 시간 기록</div>
@@ -315,6 +318,9 @@ const CLIPS = {
   'clip-s4a': { dir: 'clips/pixels-fem', fps: 10, count: 230, speed: 1.45, loop: false },
   'clip-s4b': { dir: 'clips/readout',    fps: 15, count: 99,  speed: 0.5,  loop: true },
   'clip-s5':  { dir: 'clips/tracking',   fps: 10, count: 42,  speed: 0.55, loop: true },
+  // optional: real wearable footage (finger/wrist joint with a CLCE patch). Extracted by prepare-clips.sh
+  // into clips/wearable (300x498). If the folder is missing, the animated joint is shown instead.
+  'clip-s5b': { dir: 'clips/wearable',   fps: 10, count: 160, speed: 1.0,  loop: true, optional: true },
 };
 const TOTAL = SCENES[SCENES.length - 1].start + SCENES[SCENES.length - 1].dur;
 window.TOTAL = TOTAL;
@@ -653,7 +659,8 @@ function drawTrace5(canvas, lt, deg) {
 }
 function scene5(lt, dur) {
   const deg = angle5(lt), e = strainOfAngle(deg), lam = lambdaOf(L0_5, e);
-  drawHand5(deg); drawTrace5($('trace5'), lt, deg); setClip('clip-s5', lt);
+  if (CLIPS['clip-s5b'].available) setClip('clip-s5b', lt); else drawHand5(deg);
+  drawTrace5($('trace5'), lt, deg); setClip('clip-s5', lt);
   $('c5a').textContent = fmt(deg, 0) + '°'; setBar('c5ab', deg / 90);
   $('c5e').textContent = fmt(e * 100, 0) + ' %'; setBar('c5eb', e / 0.6); $('c5sw').style.background = wl2rgb(lam);
   setProg(5, lt, dur);
@@ -686,9 +693,21 @@ window.ready = (async () => {
   await Promise.all([...document.images].map((im) => im.complete || !im.src ? 1 : new Promise((r) => { im.onload = im.onerror = r; })));
   // preload every clip frame so seeking is instant and deterministic
   const jobs = [];
-  for (const c of Object.values(CLIPS)) for (let i = 1; i <= c.count; i++) {
-    const im = new Image(); im.src = `${c.dir}/f${String(i).padStart(4, '0')}.jpg`;
-    jobs.push(new Promise((r) => { im.onload = im.onerror = r; }));
+  for (const [id, c] of Object.entries(CLIPS)) {
+    if (c.optional) {   // probe: count consecutive frames that actually exist
+      let n = 0;
+      for (let i = 1; i <= c.count; i++) {
+        const ok = await new Promise((r) => { const im = new Image(); im.onload = () => r(true); im.onerror = () => r(false); im.src = `${c.dir}/f${String(i).padStart(4, '0')}.jpg`; });
+        if (!ok) break; n++;
+      }
+      c.available = n > 0; c.count = Math.max(n, 1);
+      if (c.available) { $(id).style.display = 'block'; $('hand5').style.display = 'none'; $('chip-s5b').style.display = 'block'; $('cap-s5b').style.display = 'block'; }
+      continue;
+    }
+    for (let i = 1; i <= c.count; i++) {
+      const im = new Image(); im.src = `${c.dir}/f${String(i).padStart(4, '0')}.jpg`;
+      jobs.push(new Promise((r) => { im.onload = im.onerror = r; }));
+    }
   }
   await Promise.all(jobs);
   return true;

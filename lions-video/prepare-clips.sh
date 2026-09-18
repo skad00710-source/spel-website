@@ -16,3 +16,8 @@ x chameleon   -ss 4   -t 26  -i clips/src/adma2023-chameleon.mp4 -vf "fps=10,sca
 x tracking    -ss 5.5 -t 4.2 -i clips/src/clce-tracking.mp4      -vf "fps=10,crop=700:470:700:190,scale=560:376"
 # colour -> strain readout validation (synthetic ground truth)               -> scene: simulation
 x readout     -ss 0   -t 6.6 -i clips/src/readout-validation.mp4 -vf "fps=15,scale=620:348"
+# Optional wearable demo (finger/wrist joint with a CLCE patch). Drop the file in clips/src and uncomment:
+#   x wearable  -ss 0 -t 16 -i clips/src/wearable-joint.mp4 -vf "fps=10,scale=-2:498,crop=300:498"
+if [ -f clips/src/wearable-joint.mp4 ]; then
+  x wearable  -ss 0 -t 16 -i clips/src/wearable-joint.mp4 -vf "fps=10,scale=-2:498,crop=300:498"
+fi
