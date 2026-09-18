@@ -424,49 +424,55 @@ const L0 = 640, N_AVG = 1.6;
 function strain1(lt) { const T = 6, p = (lt % T) / T; return 0.85 * (p < 0.5 ? ease(p / 0.5) : 1 - ease((p - 0.5) / 0.5)); }
 function drawFilm1(e) {
   /* Clamped uniaxial stretch of an incompressible film (Poisson's ratio ν = 0.5):
-     length ×(1+ε), width and thickness ×(1+ε)^-ν. The clamps hold the width fixed,
-     so the lateral contraction develops over ~one film-width from each clamp (Saint-Venant). */
+     length ×(1+ε), width and thickness ×(1+ε)^-ν. The grips pin the width, so the lateral
+     contraction develops over roughly one film-width from each grip and the middle runs straight. */
   const svg = $('film1');
   const lamX = 1 + e, lamT = Math.pow(1 + e, -NU);
-  const w0 = 150, H0 = 210, cx = 196, cy = 200, clampW = 26;
-  const w = w0 * lamX, xl = cx - w / 2, xr = cx + w / 2;
-  const Ltr = Math.min(w / 2, 0.55 * H0);                 // transition length from each clamp
+  const W0 = 150, L0_FILM = 130, cx = 196, cy = 196, clampW = 26;
+  const L = L0_FILM * lamX, xl = cx - L / 2, xr = cx + L / 2;
+  const ell = 0.62 * W0;                                     // Saint-Venant transition length
   const sm = (t) => (t = clamp(t, 0, 1), t * t * (3 - 2 * t));
-  const f = (x) => sm(Math.min(x - xl, xr - x) / Ltr);    // 0 at clamps -> 1 in the free middle
-  const halfH = (x) => H0 / 2 * (1 - (1 - lamT) * f(x));
-  const eLoc = (x) => e * (0.88 + 0.12 * f(x));            // slightly less strain right at the clamps
-  const N = 48, top = [], bot = [];
-  for (let i = 0; i <= N; i++) { const x = xl + (xr - xl) * i / N; top.push(`${x.toFixed(1)},${(cy - halfH(x)).toFixed(1)}`); bot.push(`${x.toFixed(1)},${(cy + halfH(x)).toFixed(1)}`); }
+  const f = (x) => sm(Math.min(x - xl, xr - x) / ell);       // 0 at the grips -> 1 in the free middle
+  const halfW = (x) => W0 / 2 * (1 - (1 - lamT) * f(x));
+  const eLoc = (x) => e * (0.9 + 0.1 * f(x));
+  const N = 60, top = [], bot = [];
+  for (let i = 0; i <= N; i++) { const x = xl + (xr - xl) * i / N; top.push(`${x.toFixed(1)},${(cy - halfW(x)).toFixed(1)}`); bot.push(`${x.toFixed(1)},${(cy + halfW(x)).toFixed(1)}`); }
   const path = `M ${top.join(' L ')} L ${bot.reverse().join(' L ')} Z`;
   const stops = [];
-  for (let i = 0; i <= 8; i++) { const x = xl + (xr - xl) * i / 8; stops.push(`<stop offset="${(i / 8).toFixed(3)}" stop-color="${wl2rgb(lambdaOf(L0, eLoc(x)))}"/>`); }
+  for (let i = 0; i <= 10; i++) { const x = xl + (xr - xl) * i / 10; stops.push(`<stop offset="${(i / 10).toFixed(2)}" stop-color="${wl2rgb(lambdaOf(L0, eLoc(x)))}"/>`); }
   const lam = lambdaOf(L0, e), col = wl2rgb(lam);
-  const t0 = 16, th = t0 * lamT;                           // thickness bar (side view)
+  const t0 = 16, th = t0 * lamT;
   const pct = (v) => (v >= 1 ? '+' : '−') + fmt(Math.abs(v - 1) * 100, 0) + ' %';
+  const grip = (x) => `
+    <rect x="${x}" y="${cy - W0/2 - 14}" width="${clampW}" height="${W0 + 28}" rx="2" fill="url(#metal)"/>
+    <rect x="${x + 3}" y="${cy - W0/2 - 11}" width="${clampW - 6}" height="${W0 + 22}" rx="1" fill="none" stroke="#000" stroke-opacity="0.25"/>
+    <circle cx="${x + clampW/2}" cy="${cy - W0/2 + 4}" r="4" fill="#5c6472"/><circle cx="${x + clampW/2}" cy="${cy - W0/2 + 4}" r="1.6" fill="#2a2f38"/>
+    <circle cx="${x + clampW/2}" cy="${cy + W0/2 - 4}" r="4" fill="#5c6472"/><circle cx="${x + clampW/2}" cy="${cy + W0/2 - 4}" r="1.6" fill="#2a2f38"/>`;
   svg.innerHTML = `
     <defs>
       <linearGradient id="g1" x1="0" x2="1">${stops.join('')}</linearGradient>
-      <linearGradient id="sheen" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#fff" stop-opacity="0.32"/><stop offset="0.4" stop-color="#fff" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity="0.28"/></linearGradient>
+      <linearGradient id="metal" x1="0" x2="1"><stop offset="0" stop-color="#b9c0cb"/><stop offset="0.5" stop-color="#8e96a3"/><stop offset="1" stop-color="#6f7783"/></linearGradient>
+      <linearGradient id="bgg" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#1b1e26"/><stop offset="1" stop-color="#0b0d12"/></linearGradient>
+      <linearGradient id="sheen" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#fff" stop-opacity="0.22"/><stop offset="0.45" stop-color="#fff" stop-opacity="0.02"/><stop offset="1" stop-color="#000" stop-opacity="0.32"/></linearGradient>
+      <linearGradient id="glint" x1="0" x2="1"><stop offset="0" stop-color="#fff" stop-opacity="0"/><stop offset="0.5" stop-color="#fff" stop-opacity="0.28"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient>
+      <filter id="blur8" x="-20%" y="-50%" width="140%" height="200%"><feGaussianBlur stdDeviation="8"/></filter>
+      <clipPath id="filmclip"><path d="${path}"/></clipPath>
     </defs>
-    <rect x="0" y="0" width="392" height="498" fill="#0a0d14"/>
-    <rect x="${xl - clampW}" y="${cy - H0/2 - 10}" width="${clampW}" height="${H0 + 20}" rx="3" fill="#9aa3b2"/>
-    <rect x="${xr}" y="${cy - H0/2 - 10}" width="${clampW}" height="${H0 + 20}" rx="3" fill="#9aa3b2"/>
-    <rect x="${xl - clampW - 40}" y="${cy - 6}" width="40" height="12" fill="#6b7382"/>
-    <rect x="${xr + clampW}" y="${cy - 6}" width="40" height="12" fill="#6b7382"/>
+    <rect x="0" y="0" width="392" height="498" fill="url(#bgg)"/>
+    <ellipse cx="${cx}" cy="${cy + W0/2 + 16}" rx="${L/2 + 10}" ry="10" fill="#000" opacity="0.55" filter="url(#blur8)"/>
+    <rect x="${xl - clampW - 44}" y="${cy - 7}" width="44" height="14" rx="2" fill="#4c535f"/>
+    <rect x="${xr + clampW}" y="${cy - 7}" width="44" height="14" rx="2" fill="#4c535f"/>
     <path d="${path}" fill="url(#g1)"/>
     <path d="${path}" fill="url(#sheen)"/>
-    <path d="${path}" fill="none" stroke="#ffffff" stroke-opacity="0.18"/>
-    <g stroke="#c7ccd8" stroke-opacity="0.55" stroke-dasharray="3 3" fill="none">
-      <line x1="${cx}" y1="${cy - halfH(cx)}" x2="${cx}" y2="${cy - H0/2 - 12}"/>
-      <line x1="${cx}" y1="${cy + halfH(cx)}" x2="${cx}" y2="${cy + H0/2 + 12}"/>
-    </g>
-    <text x="${cx}" y="${cy - H0/2 - 18}" text-anchor="middle" font-size="11" fill="#c7ccd8">폭 ${pct(lamT)}${e > 0.03 ? ' (가운데가 잘록)' : ''}</text>
-    <text x="${cx}" y="${cy + H0/2 + 34}" text-anchor="middle" font-size="12" fill="#c7ccd8">← 길이 ${pct(lamX)}  ·  ε = ${fmt(e*100,0)} % →</text>
+    <g clip-path="url(#filmclip)"><rect x="${cx - 34}" y="${cy - W0}" width="26" height="${W0 * 2}" fill="url(#glint)" transform="rotate(18 ${cx} ${cy})"/></g>
+    <path d="${path}" fill="none" stroke="#fff" stroke-opacity="0.14"/>
+    ${grip(xl - clampW)}${grip(xr)}
+    <text x="${cx}" y="${cy + W0/2 + 46}" text-anchor="middle" font-size="12" fill="#c7ccd8">← 길이 ${pct(lamX)}  ·  ε = ${fmt(e*100,0)} % →</text>
     <g transform="translate(0,372)">
       <text x="30" y="0" font-size="11" fill="#c7ccd8">옆에서 본 두께</text>
-      <rect x="30" y="8" width="${w}" height="${th}" rx="2" fill="${col}" opacity="0.9"/>
-      <rect x="30" y="8" width="${w}" height="${t0}" rx="2" fill="none" stroke="#c7ccd8" stroke-opacity="0.35" stroke-dasharray="2 2"/>
-      <text x="${36 + w}" y="${8 + th/2 + 4}" font-size="11" fill="#c7ccd8">두께 ${pct(lamT)}</text>
+      <rect x="30" y="8" width="${L}" height="${th}" rx="2" fill="${col}" opacity="0.9"/>
+      <rect x="30" y="8" width="${L}" height="${t0}" rx="2" fill="none" stroke="#c7ccd8" stroke-opacity="0.35" stroke-dasharray="2 2"/>
+      <text x="${36 + L}" y="${8 + th/2 + 4}" font-size="11" fill="#c7ccd8">두께 ${pct(lamT)}</text>
     </g>
     <text x="30" y="414" font-size="10.5" fill="#8b93a5">포아송비 ν = 0.5 (고무는 부피가 일정) → 길이 ×(1+ε), 폭·두께 ×(1+ε)^−½</text>
     <text x="30" y="430" font-size="10.5" fill="#8b93a5">두께가 줄어드는 만큼 나선 피치도 줄어든다 → 색이 파란 쪽으로</text>`;
