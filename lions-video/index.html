@@ -70,14 +70,14 @@
   #intro, #outro { background: #ffffff; }
   #intro::before, #outro::before { content: ''; position: absolute; inset: 0; background: radial-gradient(760px 360px at 50% -120px, rgba(47,128,237,0.10), rgba(47,128,237,0) 70%); }
   .fx { opacity: 0; transform: translateY(14px); }
-  #intro .logo { position: absolute; left: 50%; top: 88px; transform: translateX(-50%); width: 300px; }
-  #intro .name { position: absolute; left: 0; right: 0; top: 328px; text-align: center; font-size: 34px; font-weight: 800; letter-spacing: -0.02em; color: var(--ink); }
+  #intro .logo { position: absolute; left: 50%; top: 122px; transform: translateX(-50%); width: 300px; }
+  #intro .name { position: absolute; left: 0; right: 0; top: 362px; text-align: center; font-size: 34px; font-weight: 800; letter-spacing: -0.02em; color: var(--ink); }
   #intro .name span { display: block; font-size: 15px; font-weight: 500; color: var(--muted); margin-top: 6px; letter-spacing: 0.04em; }
-  #intro .aff { position: absolute; left: 0; right: 0; top: 410px; text-align: center; font-size: 17px; color: var(--ink-soft); }
+  #intro .aff { position: absolute; left: 0; right: 0; top: 444px; text-align: center; font-size: 17px; color: var(--ink-soft); }
   #intro .aff b { color: var(--accent); font-weight: 700; }
-  #intro .mission { position: absolute; left: 160px; right: 160px; top: 458px; text-align: center; font-size: 19px; line-height: 1.55; color: var(--ink-soft); }
+  #intro .mission { position: absolute; left: 160px; right: 160px; top: 492px; text-align: center; font-size: 19px; line-height: 1.55; color: var(--ink-soft); }
   #intro .mission b { color: var(--ink); font-weight: 800; }
-  #intro .pills { position: absolute; left: 0; right: 0; top: 552px; display: flex; justify-content: center; gap: 34px; }
+  #intro .pills { position: absolute; left: 0; right: 0; top: 588px; display: flex; justify-content: center; gap: 34px; }
   #intro .pill { font-size: 15px; font-weight: 700; display: flex; align-items: center; gap: 9px; color: var(--ink); letter-spacing: 0.02em; }
   #intro .pill i { width: 9px; height: 9px; border-radius: 50%; display: inline-block; }
   #intro .pill small { font-weight: 500; color: var(--muted); font-size: 12px; letter-spacing: 0; }
@@ -85,7 +85,7 @@
   #intro .covers img { height: 78px; border-radius: 2px; box-shadow: 0 6px 18px rgba(20,24,40,0.14); }
   #intro .covers .t { position: absolute; right: 60px; top: 30px; font-size: 12px; color: var(--muted); text-align: right; line-height: 1.5; }
   #intro .covers .t b { color: var(--ink); }
-  #intro .kicker { position: absolute; left: 0; right: 0; top: 56px; text-align: center; font-size: 12px; letter-spacing: 0.28em; color: var(--muted); }
+  #intro .kicker { position: absolute; left: 0; right: 0; top: 84px; text-align: center; font-size: 12px; letter-spacing: 0.28em; color: var(--muted); }
 
   #outro .logo { position: absolute; left: 50%; top: 130px; transform: translateX(-50%); width: 270px; }
   #outro .big { position: absolute; left: 0; right: 0; top: 350px; text-align: center; font-size: 36px; font-weight: 800; letter-spacing: -0.02em; color: var(--ink); }
@@ -126,16 +126,6 @@
       <div class="pill fx" data-in="3.25"><i style="background:#f5a623"></i>ENERGY <small>스마트 윈도우</small></div>
       <div class="pill fx" data-in="3.5"><i style="background:#00c48c"></i>MOTION <small>소프트 액추에이터</small></div>
       <div class="pill fx" data-in="3.75"><i style="background:#7b2ff7"></i>INTELLIGENCE <small>시뮬레이션 · AI 설계</small></div>
-    </div>
-    <div class="covers">
-      <img class="fx" data-in="4.3" src="../assets/covers/lpr-2026.png" />
-      <img class="fx" data-in="4.45" src="../assets/covers/advsci-2025.png" />
-      <img class="fx" data-in="4.6" src="../assets/covers/am-2023.png" />
-      <img class="fx" data-in="4.75" src="../assets/covers/afm-2023.png" />
-      <img class="fx" data-in="4.9" src="../assets/covers/aom-2023.png" />
-      <img class="fx" data-in="5.05" src="../assets/covers/amt-2023.jpg" />
-      <img class="fx" data-in="5.2" src="../assets/covers/ome-2022.jpg" />
-      <div class="t fx" data-in="5.4"><b>저널 표지 7회 선정</b><br/>Adv. Mater. · Adv. Sci. · Laser &amp; Photonics Rev. 등</div>
     </div>
   </section>
 
@@ -306,13 +296,13 @@
    Timeline (seconds). Edit here to re-time the video.
    ============================================================ */
 const SCENES = [
-  { id: 'intro', start: 0,    dur: 7.5 },
-  { id: 's1',    start: 7.5,  dur: 12 },
-  { id: 's2',    start: 19.5, dur: 14 },
-  { id: 's3',    start: 33.5, dur: 14 },
-  { id: 's4',    start: 47.5, dur: 16 },
-  { id: 's5',    start: 63.5, dur: 16 },
-  { id: 'outro', start: 79.5, dur: 5 },
+  { id: 'intro', start: 0,    dur: 6.5 },
+  { id: 's1',    start: 6.5,  dur: 12 },
+  { id: 's2',    start: 18.5, dur: 14 },
+  { id: 's3',    start: 32.5, dur: 14 },
+  { id: 's4',    start: 46.5, dur: 16 },
+  { id: 's5',    start: 62.5, dur: 16 },
+  { id: 'outro', start: 78.5, dur: 5 },
 ];
 /* Real-footage clips = JPEG frame sequences made by prepare-clips.sh.
    speed: playback multiplier; loop: restart when the clip ends (else hold last frame). */
