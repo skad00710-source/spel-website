@@ -13,7 +13,7 @@
 | 0:19–0:33 | 다중 픽셀 광소자 | Adv. Mater. 2023 보충 영상 3 (실험) | 픽셀별 설계 계수 → 국소 변형률 → 색 |
 | 0:33–0:47 | 광 암호화 / 광학 위장 | Adv. Mater. 2023 보충 영상 10 (카멜레온) | 두께 제어 단면도, 적외선 → 가시광 진입 |
 | 0:47–1:03 | 수치해석 · 시뮬레이션 · AI 설계 | 보충 영상 3 (FEM), 색→변형률 복원 검증 영상 | FDTD / FEA / ML 도구 카드 |
-| 1:03–1:19 | CLCE 바이오 센서 | CLCE_tracking (MATLAB CIE 색 추적) | 관절 패치 애니메이션, 변형률 시간 기록 |
+| 1:03–1:19 | CLCE 바이오 센서 | CLCE_tracking (MATLAB CIE 색 추적), ACS AMI 2023 보충 영상 S3 (손가락 섬유 센서, 색+저항) | 변형률 시간 기록 (클립 굽힘 주기에 동기화) |
 | 1:19–1:24 | 마무리 (Join us · spel.hanyang.ac.kr) | – | – |
 
 ## 파일
@@ -23,7 +23,7 @@
 - `prepare-clips.sh` – `clips/src/*.mp4`를 크롭·리사이즈해 JPEG 프레임 시퀀스(`clips/<name>/f0001.jpg…`)로 추출.
   브라우저 코덱에 의존하지 않고 프레임을 정확히 동기화하기 위한 방식.
 - `render.mjs` – Playwright(Chromium)로 프레임을 캡처하고 ffmpeg로 MP4 인코딩.
-- `clips/src/` – 원본 클립 (연구실 보유 영상).
+- `clips/src/` – 원본 클립. `wearable-joint.mp4`는 외부 논문 보충 영상(ACS Appl. Mater. Interfaces 15, 16063 (2023), SI Video S3)이므로 화면 하단에 출처를 표기함.
 
 ## 다시 렌더링하기
 

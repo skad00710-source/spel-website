@@ -263,12 +263,12 @@
       <div class="cap"><b>스마트폰 카메라 한 대면 충분한 센서</b>영상의 색 좌표(x, y)를 프레임마다 읽어 <i>변형률</i>로 환산 → 전기 신호가 필요 없음</div>
     </div>
 
-    <div class="lbl" style="left:612px; top:78px"><b>응용 시뮬레이션</b> · 관절 위 CLCE 패치</div>
+    <div class="lbl" style="left:612px; top:78px"><b>웨어러블 적용</b> · 손가락 관절 위 섬유 센서</div>
     <div class="panel dark" style="left:612px; top:98px; width:300px; height:498px">
       <img class="clip" id="clip-s5b" width="300" height="498" style="display:none" />
       <svg id="hand5" viewBox="0 0 300 498" width="300" height="498"></svg>
-      <div class="chip" id="chip-s5b" style="display:none">실험 영상 · 웨어러블 적용</div>
-      <div class="cap" id="cap-s5b" style="display:none"><b>관절 위에 붙인 CLCE 패치</b>굽힐수록 색이 바뀌고, 그 색을 카메라로 읽어 <i>변형률·각도</i>로 환산</div>
+      <div class="chip" id="chip-s5b" style="display:none">실험 영상 · 색 + 저항 동시 판독</div>
+      <div class="cap" id="cap-s5b" style="display:none"><b>손가락에 감은 기계변색 섬유 센서</b>굽히면 <i>색</i>이 변하고 동시에 <i>저항</i>이 0.19 → 0.23 MΩ로 오른다 (광학 + 전기 이중 모드)</div>
     </div>
 
     <div class="lbl" style="left:936px; top:78px"><b>실시간 판독</b> · 변형률 시간 기록</div>
@@ -279,13 +279,14 @@
       <div class="card"><div class="k">관절 굽힘 각도</div><div class="v" id="c5a">0°</div><div class="bar"><i id="c5ab"></i></div></div>
       <div class="card warn"><div class="k">패치 색 → 변형률</div><div class="v"><span class="sw" id="c5sw"></span><span id="c5e">0 %</span></div><div class="bar"><i id="c5eb"></i></div></div>
     </div>
-    <div class="zero" style="left:936px; top:470px; width:316px">
+    <div class="lbl" style="left:936px; top:458px"><b>색만 읽는 광학 모드라면</b> · 전기 판독 장비가 필요 없다</div>
+    <div class="zero" style="left:936px; top:478px; width:316px">
       <div><b>0</b>배터리</div><div><b>0</b>전선</div><div><b>0</b>전자회로</div><div><b>1</b>카메라</div>
     </div>
-    <div class="loop" style="left:936px; top:552px; width:316px; line-height:1.5">응용: 재활 운동 모니터링 · 웨어러블 헬스케어 · 수술 봉합부 변형 감시 · 소프트 로봇 피부</div>
+    <div class="loop" style="left:936px; top:558px; width:316px; line-height:1.5">응용: 재활 운동 모니터링 · 웨어러블 헬스케어 · 수술 봉합부 변형 감시 · 소프트 로봇 피부</div>
 
     <div class="banner">전지도 전선도 없이, 색만 보고 변형을 읽는다 <span class="arr">→</span> <span class="hl">재활 · 웨어러블 헬스케어 · 소프트 로봇 피부</span></div>
-    <div class="prog"><div class="tm">재생 시간 <b id="t5">00.0초</b></div><div class="src">CLCE 기계변색 (mechanochromism) 기반 무전원 광학 스트레인 센서 · 연구실 학부연구생 진행 과제</div><div class="bar"></div><div class="fill" id="f5"></div><div class="now" id="n5"></div></div>
+    <div class="prog"><div class="tm">재생 시간 <b id="t5">00.0초</b></div><div class="src">가운데: Dual-mode fiber strain sensor, ACS Appl. Mater. Interfaces 15, 16063 (2023) 보충 영상 S3 · 왼쪽: 연구실 학부연구생 과제</div><div class="bar"></div><div class="fill" id="f5"></div><div class="now" id="n5"></div></div>
   </section>
 
   <!-- ================= OUTRO ================= -->
@@ -320,7 +321,7 @@ const CLIPS = {
   'clip-s5':  { dir: 'clips/tracking',   fps: 10, count: 42,  speed: 0.55, loop: true },
   // optional: real wearable footage (finger/wrist joint with a CLCE patch). Extracted by prepare-clips.sh
   // into clips/wearable (300x498). If the folder is missing, the animated joint is shown instead.
-  'clip-s5b': { dir: 'clips/wearable',   fps: 10, count: 160, speed: 1.0,  loop: true, optional: true },
+  'clip-s5b': { dir: 'clips/wearable',   fps: 10, count: 160, speed: 0.95, loop: true, optional: true },
 };
 const TOTAL = SCENES[SCENES.length - 1].start + SCENES[SCENES.length - 1].dur;
 window.TOTAL = TOTAL;
@@ -609,7 +610,7 @@ function scene4(lt, dur) {
 
 /* ================= scene 5 : biosensor ================= */
 const L0_5 = 650;
-const angle5 = (lt) => seq(lt, [[0.8, 3.2, 0, 90], [3.2, 4.4, 90, 90], [4.4, 6.4, 90, 0], [7.2, 9.0, 0, 45], [9.0, 10.5, 45, 45], [10.5, 12.0, 45, 0], [12.6, 14.6, 0, 90], [14.6, 16.0, 90, 0]], 0);
+const angle5 = (lt) => CLIPS['clip-s5b'].available ? 45 + 45 * Math.cos(2 * Math.PI * lt * 0.95 / 2.5) : seq(lt, [[0.8, 3.2, 0, 90], [3.2, 4.4, 90, 90], [4.4, 6.4, 90, 0], [7.2, 9.0, 0, 45], [9.0, 10.5, 45, 45], [10.5, 12.0, 45, 0], [12.6, 14.6, 0, 90], [14.6, 16.0, 90, 0]], 0);
 const strainOfAngle = (deg) => 0.55 * deg / 90;
 function drawHand5(deg) {
   const svg = $('hand5');
