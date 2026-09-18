@@ -1,0 +1,704 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<title>SPEL 연구 소개 영상 (LIONS 칼리지)</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700;900&display=swap" />
+<style>
+  :root {
+    --bg: #0b1221; --panel: #111b30; --panel2: #0e1729; --line: #24334f;
+    --ink: #eef3fb; --muted: #8fa1bf; --dim: #5d6f8f; --accent: #4da3ff;
+    --ok: #35d39a; --warn: #ffb54d; --pink: #ff6b9a; --violet: #a78bfa;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1280px; height: 720px; overflow: hidden; background: var(--bg); color: var(--ink);
+    font-family: "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif; }
+  #stage { position: relative; width: 1280px; height: 720px; overflow: hidden; }
+  .scene { position: absolute; inset: 0; opacity: 0; }
+  .scene.on { opacity: 1; }
+  svg text { font-family: "Noto Sans KR", sans-serif; }
+
+  /* ---------- shared scene chrome (mirrors the reference clips) ---------- */
+  .hdr { position: absolute; left: 28px; right: 28px; top: 20px; height: 44px; border-bottom: 1px solid var(--line);
+    display: flex; align-items: flex-start; justify-content: space-between; }
+  .hdr h1 { font-size: 22px; font-weight: 900; letter-spacing: -0.01em; }
+  .hdr h1 small { font-size: 13px; font-weight: 400; color: var(--muted); margin-left: 12px; }
+  .hdr .tag { font-size: 12px; color: var(--muted); margin-top: 7px; letter-spacing: 0.02em; white-space: nowrap; }
+  .hdr .tag b { color: var(--accent); font-weight: 700; }
+  .lbl { position: absolute; font-size: 12px; color: var(--muted); letter-spacing: 0.02em; white-space: nowrap; }
+  .lbl b { color: var(--ink); font-weight: 700; }
+  .panel { position: absolute; background: var(--panel); border: 1px solid var(--line); border-radius: 10px; overflow: hidden; }
+  .panel.dark { background: #05070c; }
+  .panel.light { background: #fff; }
+  .panel > img.clip { position: absolute; left: 0; top: 0; }
+  .banner { position: absolute; left: 28px; right: 28px; bottom: 58px; height: 46px; border-radius: 10px;
+    background: #15223a; border: 1px solid #2a3d5e; display: flex; align-items: center; justify-content: center;
+    font-size: 19px; font-weight: 700; letter-spacing: -0.01em; white-space: nowrap; }
+  .banner .arr { color: var(--accent); margin: 0 10px; font-weight: 900; }
+  .banner .hl { color: var(--warn); }
+  .prog { position: absolute; left: 28px; right: 28px; bottom: 26px; height: 18px; }
+  .prog .bar { position: absolute; left: 0; right: 0; top: 8px; height: 2px; background: #223252; }
+  .prog .fill { position: absolute; left: 0; top: 8px; height: 2px; background: var(--accent); }
+  .prog .now { position: absolute; top: 2px; width: 2px; height: 14px; background: var(--warn); }
+  .prog .tm { position: absolute; left: 0; top: -20px; font-size: 12px; color: var(--muted); }
+  .prog .tm b { color: var(--ink); }
+  .prog .src { position: absolute; right: 0; top: -20px; font-size: 11px; color: var(--dim); }
+  .cap { position: absolute; left: 0; right: 0; bottom: 0; padding: 9px 12px 8px; background: rgba(6,10,20,0.96);
+    font-size: 12px; color: var(--muted); line-height: 1.45; border-top: 1px solid #1c2740; }
+  .cap b { color: var(--ink); display: block; font-size: 13px; }
+  .cap i { color: #fff; font-style: normal; }
+  .chip { position: absolute; left: 10px; top: 10px; font-size: 11px; font-weight: 700; color: #fff; background: rgba(77,163,255,0.85);
+    padding: 3px 8px; border-radius: 4px; letter-spacing: 0.02em; }
+  .chip.sim { background: rgba(167,139,250,0.9); }
+
+  /* readout cards */
+  .cards { position: absolute; display: flex; flex-direction: column; gap: 8px; }
+  .card { border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px; background: var(--panel2); }
+  .card .k { font-size: 11px; color: var(--muted); letter-spacing: 0.02em; }
+  .card .v { font-size: 20px; font-weight: 900; margin-top: 1px; font-variant-numeric: tabular-nums; }
+  .card .v small { font-size: 11px; color: var(--muted); font-weight: 400; margin-left: 4px; }
+  .card .bar { height: 5px; border-radius: 3px; background: #1c2a44; margin-top: 6px; overflow: hidden; }
+  .card .bar i { display: block; height: 100%; width: 0; background: var(--accent); border-radius: 3px; }
+  .card.violet { border-color: #4b3f8a; } .card.violet .bar i { background: var(--violet); }
+  .card.green { border-color: #1f6a52; } .card.green .bar i { background: var(--ok); }
+  .card.pink { border-color: #7a3552; } .card.pink .bar i { background: var(--pink); }
+  .card.warn .bar i { background: var(--warn); }
+  .card .sw { display: inline-block; width: 22px; height: 22px; border-radius: 5px; vertical-align: middle; margin-right: 8px; border: 1px solid #ffffff33; }
+
+  /* ---------- intro / outro ---------- */
+  #intro, #outro { background: radial-gradient(1200px 600px at 50% 120%, #14223d 0%, var(--bg) 60%); }
+  .fx { opacity: 0; transform: translateY(14px); }
+  #intro .logo { position: absolute; left: 50%; top: 96px; transform: translateX(-50%); width: 340px; }
+  #intro .name { position: absolute; left: 0; right: 0; top: 326px; text-align: center; font-size: 34px; font-weight: 900; letter-spacing: -0.01em; }
+  #intro .name span { display: block; font-size: 15px; font-weight: 400; color: var(--muted); margin-top: 6px; letter-spacing: 0.06em; }
+  #intro .aff { position: absolute; left: 0; right: 0; top: 408px; text-align: center; font-size: 17px; color: var(--ink); }
+  #intro .aff b { color: var(--accent); }
+  #intro .mission { position: absolute; left: 160px; right: 160px; top: 458px; text-align: center; font-size: 19px; line-height: 1.55; color: #d6e0f0; }
+  #intro .mission b { color: var(--ink); font-weight: 900; }
+  #intro .pills { position: absolute; left: 0; right: 0; top: 548px; display: flex; justify-content: center; gap: 14px; }
+  #intro .pill { padding: 10px 18px; border-radius: 999px; border: 1px solid var(--line); background: #111b30; font-size: 15px; font-weight: 700; display: flex; align-items: center; gap: 10px; }
+  #intro .pill i { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+  #intro .pill small { font-weight: 400; color: var(--muted); font-size: 12px; }
+  #intro .covers { position: absolute; left: 0; right: 0; top: 616px; display: flex; justify-content: center; gap: 10px; }
+  #intro .covers img { height: 78px; border-radius: 4px; border: 1px solid #ffffff22; box-shadow: 0 6px 18px #00000066; }
+  #intro .covers .t { position: absolute; right: 60px; top: 30px; font-size: 12px; color: var(--muted); text-align: right; line-height: 1.5; }
+  #intro .covers .t b { color: var(--ink); }
+  #intro .kicker { position: absolute; left: 0; right: 0; top: 60px; text-align: center; font-size: 13px; letter-spacing: 0.25em; color: var(--muted); }
+
+  #outro .logo { position: absolute; left: 50%; top: 130px; transform: translateX(-50%); width: 300px; }
+  #outro .big { position: absolute; left: 0; right: 0; top: 350px; text-align: center; font-size: 36px; font-weight: 900; }
+  #outro .big span { display: block; font-size: 18px; font-weight: 400; color: var(--muted); margin-top: 10px; line-height: 1.6; }
+  #outro .url { position: absolute; left: 0; right: 0; top: 486px; text-align: center; font-size: 24px; font-weight: 700; color: var(--accent); letter-spacing: 0.03em; }
+  #outro .foot { position: absolute; left: 0; right: 0; top: 546px; text-align: center; font-size: 14px; color: var(--muted); line-height: 1.7; }
+  #outro .foot b { color: var(--ink); }
+
+  /* ---------- simulation scene ---------- */
+  .tools { position: absolute; display: flex; gap: 12px; }
+  .tool { flex: 1; border: 1px solid var(--line); border-radius: 8px; background: var(--panel2); padding: 9px 12px; }
+  .tool .k { font-size: 11px; color: var(--muted); }
+  .tool .v { font-size: 15px; font-weight: 900; margin-top: 2px; }
+  .tool .v span { font-weight: 400; color: var(--muted); font-size: 12px; margin-left: 6px; }
+  .tool .d { font-size: 11px; color: #c3cfe3; margin-top: 4px; line-height: 1.4; }
+  .loop { position: absolute; font-size: 12px; color: var(--muted); }
+  .loop b { color: var(--ok); }
+
+  /* ---------- biosensor scene ---------- */
+  .zero { position: absolute; display: flex; gap: 8px; }
+  .zero div { flex: 1; border: 1px dashed #3a4c6f; border-radius: 8px; padding: 6px 4px; text-align: center; font-size: 11px; color: var(--muted); }
+  .zero div b { display: block; font-size: 18px; color: var(--ok); font-weight: 900; }
+</style>
+</head>
+<body>
+<div id="stage">
+
+  <!-- ================= INTRO ================= -->
+  <section class="scene" id="intro">
+    <div class="kicker fx" data-in="0.2">HANYANG UNIVERSITY ERICA · LIONS COLLEGE</div>
+    <img class="logo fx" data-in="0.4" src="../assets/logo-white.png" alt="SPEL" />
+    <div class="name fx" data-in="1.0">Soft Photonics &amp; Electro-optics Lab<span>소프트 포토닉스 및 전기광학 연구실 (SPEL)</span></div>
+    <div class="aff fx" data-in="1.5">한양대학교 ERICA 차세대반도체융합공학부 · <b>남승민</b> 교수</div>
+    <div class="mission fx" data-in="2.2">액정·고분자·엘라스토머 같은 <b>부드러운 소재</b>를 설계해<br/><b>빛(LIGHT)</b>, <b>에너지(ENERGY)</b>, <b>움직임(MOTION)</b>을 제어하는 차세대 소자를 만듭니다.</div>
+    <div class="pills">
+      <div class="pill fx" data-in="3.0"><i style="background:#4da3ff"></i>LIGHT <small>가변 포토닉 소자</small></div>
+      <div class="pill fx" data-in="3.25"><i style="background:#ffb54d"></i>ENERGY <small>스마트 윈도우</small></div>
+      <div class="pill fx" data-in="3.5"><i style="background:#35d39a"></i>MOTION <small>소프트 액추에이터</small></div>
+      <div class="pill fx" data-in="3.75"><i style="background:#a78bfa"></i>INTELLIGENCE <small>시뮬레이션 · AI 설계</small></div>
+    </div>
+    <div class="covers">
+      <img class="fx" data-in="4.3" src="../assets/covers/lpr-2026.png" />
+      <img class="fx" data-in="4.45" src="../assets/covers/advsci-2025.png" />
+      <img class="fx" data-in="4.6" src="../assets/covers/am-2023.png" />
+      <img class="fx" data-in="4.75" src="../assets/covers/afm-2023.png" />
+      <img class="fx" data-in="4.9" src="../assets/covers/aom-2023.png" />
+      <img class="fx" data-in="5.05" src="../assets/covers/amt-2023.jpg" />
+      <img class="fx" data-in="5.2" src="../assets/covers/ome-2022.jpg" />
+      <div class="t fx" data-in="5.4"><b>저널 표지 7회 선정</b><br/>Adv. Mater. · Adv. Sci. · Laser &amp; Photonics Rev. 등</div>
+    </div>
+  </section>
+
+  <!-- ================= SCENE 1 : CLCE principle ================= -->
+  <section class="scene" id="s1">
+    <div class="hdr"><h1>잡아당기면 색이 변하는 고무 : 키랄 액정 엘라스토머 (CLCE)<small>모든 연구의 출발점</small></h1><div class="tag">소자 동작 <b>×</b> 나선 구조 시뮬레이션</div></div>
+
+    <div class="lbl" style="left:28px; top:78px"><b>소자 동작</b> · CLCE 필름 인장</div>
+    <div class="panel" style="left:28px; top:98px; width:392px; height:498px">
+      <svg id="film1" viewBox="0 0 392 498" width="392" height="498"></svg>
+      <div class="cap"><b>고무처럼 늘어나는 광학 필름</b>색소가 아니라 <i>나노 나선 구조</i>가 빛을 반사해 색을 만듭니다 (구조색)</div>
+    </div>
+
+    <div class="lbl" style="left:444px; top:78px"><b>필름 내부에서 일어나는 일</b> · 액정 분자 나선 (helix)</div>
+    <div class="panel" style="left:444px; top:98px; width:456px; height:498px">
+      <svg id="helix1" viewBox="0 0 456 498" width="456" height="498"></svg>
+    </div>
+
+    <div class="lbl" style="left:924px; top:78px"><b>실시간 판독</b> · 반사 스펙트럼</div>
+    <div class="panel" style="left:924px; top:98px; width:328px; height:214px">
+      <canvas id="spec1" width="328" height="214"></canvas>
+    </div>
+    <div class="cards" style="left:924px; top:322px; width:328px">
+      <div class="card"><div class="k">변형률 ε (얼마나 늘렸나)</div><div class="v" id="c1e">0 %</div><div class="bar"><i id="c1eb"></i></div></div>
+      <div class="card violet"><div class="k">나선 피치 P (한 바퀴 도는 길이)</div><div class="v" id="c1p">400 nm</div><div class="bar"><i id="c1pb"></i></div></div>
+      <div class="card warn"><div class="k">반사 파장 λ = n · P</div><div class="v"><span class="sw" id="c1sw"></span><span id="c1l">640 nm</span></div><div class="bar"><i id="c1lb"></i></div></div>
+    </div>
+
+    <div class="banner">늘리면 나선 간격이 줄어든다 <span class="arr">→</span> 반사 파장이 짧아진다 <span class="arr">→</span> <span class="hl">빨강 → 초록 → 파랑</span></div>
+    <div class="prog"><div class="tm">재생 시간 <b id="t1">00.0초</b></div><div class="src">원리: Bragg 반사 λ ≈ n·P · 인장 시 두께 감소로 P 감소</div><div class="bar"></div><div class="fill" id="f1"></div><div class="now" id="n1"></div></div>
+  </section>
+
+  <!-- ================= SCENE 2 : multi-pixel photonic device ================= -->
+  <section class="scene" id="s2">
+    <div class="hdr"><h1>다중 픽셀 광소자 : 한 번 당기면 아홉 가지 색<small>Adv. Mater. 2023 · 표지 논문</small></h1><div class="tag">실제 소자 동작 <b>×</b> 픽셀 설계 시뮬레이션</div></div>
+
+    <div class="lbl" style="left:28px; top:78px"><b>실제 소자 동작</b> · 3×3 CLCE 픽셀 배열, 양축 인장</div>
+    <div class="panel dark" style="left:28px; top:98px; width:392px; height:498px">
+      <img class="clip" id="clip-s2" width="392" height="498" />
+      <div class="chip">실험 영상</div>
+      <div class="cap"><b>같은 필름, 같은 힘, 서로 다른 색</b>픽셀마다 <i>두께·경계 구조</i>를 다르게 설계해 늘어나는 정도를 프로그래밍</div>
+    </div>
+
+    <div class="lbl" style="left:444px; top:78px"><b>픽셀 설계 시뮬레이션</b> · 픽셀별 국소 변형률 → 색</div>
+    <div class="panel" style="left:444px; top:98px; width:456px; height:498px">
+      <svg id="grid2" viewBox="0 0 456 498" width="456" height="498"></svg>
+    </div>
+
+    <div class="lbl" style="left:924px; top:78px"><b>실시간 판독</b> · 픽셀별 반사 파장</div>
+    <div class="panel" style="left:924px; top:98px; width:328px; height:214px">
+      <canvas id="bars2" width="328" height="214"></canvas>
+    </div>
+    <div class="cards" style="left:924px; top:322px; width:328px">
+      <div class="card"><div class="k">전체 변형률 ε (필름 전체에 가한 힘)</div><div class="v" id="c2e">0 %</div><div class="bar"><i id="c2eb"></i></div></div>
+      <div class="card pink"><div class="k">서로 구분되는 색의 수</div><div class="v" id="c2n">1 <small>/ 9 픽셀</small></div><div class="bar"><i id="c2nb"></i></div></div>
+      <div class="card green"><div class="k">파장 분리 폭 (가장 긴 λ − 가장 짧은 λ)</div><div class="v" id="c2w">0 nm</div><div class="bar"><i id="c2wb"></i></div></div>
+    </div>
+
+    <div class="banner">입력은 하나, 출력은 아홉 <span class="arr">→</span> <span class="hl">전기 없이 색을 바꾸는 반사형 디스플레이 · 색 분리 광소자</span></div>
+    <div class="prog"><div class="tm">재생 시간 <b id="t2">00.0초</b></div><div class="src">Nam et al., Advanced Materials 35, 2302456 (2023) · 보충 영상 3</div><div class="bar"></div><div class="fill" id="f2"></div><div class="now" id="n2"></div></div>
+  </section>
+
+  <!-- ================= SCENE 3 : optical encryption / camouflage ================= -->
+  <section class="scene" id="s3">
+    <div class="hdr"><h1>광 암호화 소자 : 늘려야만 보이는 카멜레온<small>Adv. Mater. 2023 · Light: Sci. &amp; Appl. 2025</small></h1><div class="tag">실제 소자 동작 <b>×</b> 두께 제어 시뮬레이션</div></div>
+
+    <div class="lbl" style="left:28px; top:78px"><b>실제 소자 동작</b> · 위장 광피부 (숨김 ↔ 발현)</div>
+    <div class="panel dark" style="left:28px; top:98px; width:392px; height:498px">
+      <img class="clip" id="clip-s3" width="392" height="498" />
+      <div class="chip">실험 영상 · 2배속</div>
+      <div class="cap"><b>평소에는 그냥 투명한 필름</b>반사 파장을 눈에 안 보이는 <i>적외선</i>에 숨겨두고, 당기면 가시광으로 끌어옵니다</div>
+    </div>
+
+    <div class="lbl" style="left:444px; top:78px"><b>필름 내부에서 일어나는 일</b> · 두께가 다르면 늘어나는 정도가 다르다</div>
+    <div class="panel" style="left:444px; top:98px; width:456px; height:498px">
+      <svg id="cross3" viewBox="0 0 456 498" width="456" height="498"></svg>
+    </div>
+
+    <div class="lbl" style="left:924px; top:78px"><b>실시간 판독</b> · 반사 스펙트럼 (가시광 창)</div>
+    <div class="panel" style="left:924px; top:98px; width:328px; height:214px">
+      <canvas id="spec3" width="328" height="214"></canvas>
+    </div>
+    <div class="cards" style="left:924px; top:322px; width:328px">
+      <div class="card"><div class="k">변형률 ε</div><div class="v" id="c3e">0 %</div><div class="bar"><i id="c3eb"></i></div></div>
+      <div class="card green"><div class="k">해독 상태</div><div class="v" id="c3s">🔒 숨김</div><div class="bar"><i id="c3sb"></i></div></div>
+      <div class="card pink"><div class="k">가시광 영역에 들어온 구역</div><div class="v" id="c3n">0 <small>/ 4 구역</small></div><div class="bar"><i id="c3nb"></i></div></div>
+    </div>
+
+    <div class="banner">평소엔 투명, 당기면 암호가 나타난다 <span class="arr">→</span> <span class="hl">위조 방지 라벨 · 보안 인증 · 광학 위장</span></div>
+    <div class="prog"><div class="tm">재생 시간 <b id="t3">00.0초</b></div><div class="src">Nam et al., Adv. Mater. (2023) 보충 영상 10 · Nam et al., Light: Sci. &amp; Appl. 14, 136 (2025)</div><div class="bar"></div><div class="fill" id="f3"></div><div class="now" id="n3"></div></div>
+  </section>
+
+  <!-- ================= SCENE 4 : numerical / simulation approach ================= -->
+  <section class="scene" id="s4">
+    <div class="hdr"><h1>수치해석으로 먼저 만들어 본다 : 시뮬레이션 · AI 기반 설계<small>실험 ↔ 시뮬레이션 피드백 루프</small></h1><div class="tag">유한요소 해석 <b>×</b> 데이터 기반 판독 검증</div></div>
+
+    <div class="lbl" style="left:28px; top:78px"><b>유한요소 해석 (FEM)</b> · 앞 장면의 3×3 픽셀 배열, 컴퓨터 속 재현</div>
+    <div class="panel light" style="left:28px; top:98px; width:600px; height:400px">
+      <img class="clip" id="clip-s4a" width="600" height="400" />
+      <div class="chip sim" style="top:auto; bottom:10px">시뮬레이션 · 변형률 분포</div>
+    </div>
+
+    <div class="lbl" style="left:652px; top:78px"><b>색 → 변형률 복원 알고리즘 검증</b> · 합성 CLCE 영상 (정답을 아는 데이터)</div>
+    <div class="panel light" style="left:652px; top:98px; width:600px; height:400px">
+      <img class="clip" id="clip-s4b" width="620" height="348" style="left:-10px; top:26px" />
+      <div class="chip sim" style="top:auto; bottom:10px">시뮬레이션 · 정답 vs 추정</div>
+    </div>
+
+    <div class="tools" style="left:28px; top:516px; width:1224px">
+      <div class="tool"><div class="k">광학</div><div class="v">FDTD 전자기 해석<span>Lumerical</span></div><div class="d">나선 구조가 어떤 파장을 얼마나 반사할지 계산</div></div>
+      <div class="tool"><div class="k">역학</div><div class="v">다중물리 유한요소 해석<span>COMSOL · ABAQUS</span></div><div class="d">픽셀·두께·경계 설계에 따라 어디가 얼마나 늘어날지 예측</div></div>
+      <div class="tool"><div class="k">데이터</div><div class="v">머신러닝 · 역설계<span>Python · MATLAB</span></div><div class="d">원하는 색·감도에서 거꾸로 구조를 찾고, 색→변형률 판독을 학습</div></div>
+      <div class="tool" style="border-color:#1f6a52"><div class="k">검증 지표 (오른쪽 영상)</div><div class="v" id="c4m">상관계수 0.81 · 평균오차 2.6 %</div><div class="d">정답 변형률 지도와 색으로 추정한 지도를 프레임마다 비교</div></div>
+    </div>
+
+    <div class="banner">만들기 전에 계산하고, 만든 뒤에 비교한다 <span class="arr">→</span> <span class="hl">실험 횟수를 줄이고 설계 정확도를 높이는 연구 방식</span></div>
+    <div class="prog"><div class="tm">재생 시간 <b id="t4">00.0초</b></div><div class="src">왼쪽: Adv. Mater. (2023) 보충 영상 3 (FEM) · 오른쪽: 연구실 내부 검증 영상</div><div class="bar"></div><div class="fill" id="f4"></div><div class="now" id="n4"></div></div>
+  </section>
+
+  <!-- ================= SCENE 5 : biosensor ================= -->
+  <section class="scene" id="s5">
+    <div class="hdr"><h1>CLCE 바이오 센서 : 몸의 움직임을 색으로 읽는다<small>배터리 · 전선 없는 무전원 광학 센서</small></h1><div class="tag">실제 판독 <b>×</b> 응용 시뮬레이션</div></div>
+
+    <div class="lbl" style="left:28px; top:78px"><b>실제 판독</b> · 손가락으로 당긴 CLCE, 카메라 색 추적 (CIE 1931 색도도)</div>
+    <div class="panel dark" style="left:28px; top:98px; width:560px; height:498px">
+      <img class="clip" id="clip-s5" width="560" height="376" style="top:40px" />
+      <div class="chip">실험 영상 · MATLAB 실시간 색 추적</div>
+      <div class="cap"><b>스마트폰 카메라 한 대면 충분한 센서</b>영상의 색 좌표(x, y)를 프레임마다 읽어 <i>변형률</i>로 환산 → 전기 신호가 필요 없음</div>
+    </div>
+
+    <div class="lbl" style="left:612px; top:78px"><b>응용 시뮬레이션</b> · 관절 위 CLCE 패치</div>
+    <div class="panel" style="left:612px; top:98px; width:300px; height:498px">
+      <svg id="hand5" viewBox="0 0 300 498" width="300" height="498"></svg>
+    </div>
+
+    <div class="lbl" style="left:936px; top:78px"><b>실시간 판독</b> · 변형률 시간 기록</div>
+    <div class="panel" style="left:936px; top:98px; width:316px; height:190px">
+      <canvas id="trace5" width="316" height="190"></canvas>
+    </div>
+    <div class="cards" style="left:936px; top:298px; width:316px">
+      <div class="card"><div class="k">관절 굽힘 각도</div><div class="v" id="c5a">0°</div><div class="bar"><i id="c5ab"></i></div></div>
+      <div class="card warn"><div class="k">패치 색 → 변형률</div><div class="v"><span class="sw" id="c5sw"></span><span id="c5e">0 %</span></div><div class="bar"><i id="c5eb"></i></div></div>
+    </div>
+    <div class="zero" style="left:936px; top:470px; width:316px">
+      <div><b>0</b>배터리</div><div><b>0</b>전선</div><div><b>0</b>전자회로</div><div><b>1</b>카메라</div>
+    </div>
+    <div class="loop" style="left:936px; top:552px; width:316px; line-height:1.5">응용: 재활 운동 모니터링 · 웨어러블 헬스케어 · 수술 봉합부 변형 감시 · 소프트 로봇 피부</div>
+
+    <div class="banner">전지도 전선도 없이, 색만 보고 변형을 읽는다 <span class="arr">→</span> <span class="hl">재활 · 웨어러블 헬스케어 · 소프트 로봇 피부</span></div>
+    <div class="prog"><div class="tm">재생 시간 <b id="t5">00.0초</b></div><div class="src">CLCE 기계변색 (mechanochromism) 기반 무전원 광학 스트레인 센서 · 연구실 학부연구생 진행 과제</div><div class="bar"></div><div class="fill" id="f5"></div><div class="now" id="n5"></div></div>
+  </section>
+
+  <!-- ================= OUTRO ================= -->
+  <section class="scene" id="outro">
+    <img class="logo fx" data-in="0.2" src="../assets/logo-white.png" alt="SPEL" />
+    <div class="big fx" data-in="0.8">Shape light with us<span>호기심과 열정, 도전 정신을 가진 학생이라면 전공에 관계없이 환영합니다.<br/>학부연구생 상시 모집 · 1학년도 환영</span></div>
+    <div class="url fx" data-in="1.6">spel.hanyang.ac.kr</div>
+    <div class="foot fx" data-in="2.0"><b>남승민</b> 교수 · namsm@hanyang.ac.kr · 한양대학교 ERICA 차세대반도체융합공학부<br/>Soft Photonics &amp; Electro-optics Lab</div>
+  </section>
+</div>
+
+<script>
+/* ============================================================
+   Timeline (seconds). Edit here to re-time the video.
+   ============================================================ */
+const SCENES = [
+  { id: 'intro', start: 0,    dur: 7.5 },
+  { id: 's1',    start: 7.5,  dur: 12 },
+  { id: 's2',    start: 19.5, dur: 14 },
+  { id: 's3',    start: 33.5, dur: 14 },
+  { id: 's4',    start: 47.5, dur: 16 },
+  { id: 's5',    start: 63.5, dur: 16 },
+  { id: 'outro', start: 79.5, dur: 5 },
+];
+/* Real-footage clips = JPEG frame sequences made by prepare-clips.sh.
+   speed: playback multiplier; loop: restart when the clip ends (else hold last frame). */
+const CLIPS = {
+  'clip-s2':  { dir: 'clips/pixels-exp', fps: 10, count: 260, speed: 1.85, loop: false },
+  'clip-s3':  { dir: 'clips/chameleon',  fps: 10, count: 260, speed: 1.85, loop: false },
+  'clip-s4a': { dir: 'clips/pixels-fem', fps: 10, count: 230, speed: 1.45, loop: false },
+  'clip-s4b': { dir: 'clips/readout',    fps: 15, count: 99,  speed: 0.5,  loop: true },
+  'clip-s5':  { dir: 'clips/tracking',   fps: 10, count: 42,  speed: 0.55, loop: true },
+};
+const TOTAL = SCENES[SCENES.length - 1].start + SCENES[SCENES.length - 1].dur;
+window.TOTAL = TOTAL;
+
+/* ---------------- helpers ---------------- */
+const $ = (id) => document.getElementById(id);
+const clamp = (x, a, b) => Math.max(a, Math.min(b, x));
+const lerp = (a, b, t) => a + (b - a) * t;
+const ease = (t) => (t = clamp(t, 0, 1), t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2);
+const fmt = (x, d = 1) => x.toFixed(d);
+const seq = (lt, steps, last) => { for (const [a, b, s, e] of steps) if (lt >= a && lt < b) return lerp(s, e, ease((lt - a) / (b - a))); return last; };
+
+/* wavelength (nm) -> css rgb; outside 380–750 fades to dark (invisible) */
+function wl2rgb(w, gain = 1) {
+  let r = 0, g = 0, b = 0;
+  if (w >= 380 && w < 440) { r = -(w - 440) / 60; b = 1; }
+  else if (w < 490) { g = (w - 440) / 50; b = 1; }
+  else if (w < 510) { g = 1; b = -(w - 510) / 20; }
+  else if (w < 580) { r = (w - 510) / 70; g = 1; }
+  else if (w < 645) { r = 1; g = -(w - 645) / 65; }
+  else if (w <= 750) { r = 1; }
+  let f = 1;
+  if (w < 420) f = 0.3 + 0.7 * (w - 380) / 40;
+  else if (w > 700) f = 0.3 + 0.7 * (750 - w) / 50;
+  if (w < 380 || w > 750) f = 0;
+  f *= gain;
+  const gam = (c) => Math.round(255 * Math.pow(Math.max(0, c * f), 0.8));
+  return `rgb(${gam(r)},${gam(g)},${gam(b)})`;
+}
+const rgba = (col, a) => col.replace('rgb', 'rgba').replace(')', `,${a})`);
+/* strain -> wavelength (uniaxial stretch, Poisson thinning of the helix) */
+const NU = 0.5;
+const lambdaOf = (l0, e) => l0 * Math.pow(1 + e, -NU);
+
+function runFx(section, lt) {
+  section.querySelectorAll('.fx').forEach((el) => {
+    const t0 = parseFloat(el.dataset.in || 0);
+    const k = ease((lt - t0) / 0.6);
+    el.style.opacity = k;
+    el.style.transform = (el.classList.contains('logo') ? 'translateX(-50%) ' : '') + `translateY(${(1 - k) * 14}px)`;
+  });
+}
+function setBar(id, frac) { $(id).style.width = clamp(frac, 0, 1) * 100 + '%'; }
+function setProg(n, lt, dur) {
+  $('t' + n).textContent = fmt(lt, 1).padStart(4, '0') + '초';
+  $('f' + n).style.width = (lt / dur * 100) + '%';
+  $('n' + n).style.left = (lt / dur * 100) + '%';
+}
+function setClip(id, lt) {
+  const c = CLIPS[id]; if (!c) return;
+  let f = Math.floor(lt * c.speed * c.fps);
+  f = c.loop ? f % c.count : Math.min(f, c.count - 1);
+  const src = `${c.dir}/f${String(f + 1).padStart(4, '0')}.jpg`;
+  const im = $(id); if (im.getAttribute('src') !== src) im.src = src;
+}
+
+/* ---------------- spectrum chart (shared) ---------------- */
+function drawSpectrum(canvas, lam, opts = {}) {
+  const c = canvas.getContext('2d'), W = canvas.width, H = canvas.height;
+  c.clearRect(0, 0, W, H); c.fillStyle = '#111b30'; c.fillRect(0, 0, W, H);
+  const x0 = 40, x1 = W - 16, y0 = 24, y1 = H - 34;
+  const xmin = opts.xmin || 380, xmax = opts.xmax || 780;
+  const X = (w) => x0 + (w - xmin) / (xmax - xmin) * (x1 - x0);
+  for (let w = xmin; w < xmax; w += 2) { c.fillStyle = wl2rgb(w, 0.9); c.fillRect(X(w), y1 + 4, X(w + 2) - X(w) + 0.5, 6); }
+  if (opts.visibleBox) {
+    c.fillStyle = 'rgba(77,163,255,0.08)'; c.fillRect(X(400), y0, X(700) - X(400), y1 - y0);
+    c.strokeStyle = 'rgba(77,163,255,0.5)'; c.setLineDash([4, 3]); c.strokeRect(X(400), y0, X(700) - X(400), y1 - y0); c.setLineDash([]);
+    c.fillStyle = '#4da3ff'; c.font = '10px "Noto Sans KR"'; c.textAlign = 'center';
+    c.fillText('눈에 보이는 영역 (400–700 nm)', (X(400) + X(700)) / 2, y0 + 12);
+    c.fillStyle = '#8fa1bf'; c.fillText('적외선 (안 보임)', (X(700) + X(xmax)) / 2, y0 + 12);
+  }
+  c.strokeStyle = '#33456a'; c.lineWidth = 1; c.beginPath(); c.moveTo(x0, y0); c.lineTo(x0, y1); c.lineTo(x1, y1); c.stroke();
+  c.fillStyle = '#8fa1bf'; c.font = '10px "Noto Sans KR"'; c.textAlign = 'center';
+  for (let w = Math.ceil(xmin / 100) * 100; w <= xmax; w += 100) { c.fillText(w, X(w), H - 8); c.beginPath(); c.moveTo(X(w), y1); c.lineTo(X(w), y1 + 3); c.stroke(); }
+  c.save(); c.translate(12, (y0 + y1) / 2); c.rotate(-Math.PI / 2); c.fillText('반사율', 0, 0); c.restore();
+  c.textAlign = 'left'; c.fillText('파장 (nm)', x0, 14);
+  const peaks = Array.isArray(lam) ? lam : [lam];
+  peaks.forEach((pk, pi) => {
+    const col = wl2rgb(clamp(pk, 380, 750));
+    c.beginPath();
+    for (let w = xmin; w <= xmax; w += 1) {
+      const v = Math.exp(-Math.pow((w - pk) / 22, 2));
+      const x = X(w), y = y1 - v * (y1 - y0 - 18);
+      w === xmin ? c.moveTo(x, y) : c.lineTo(x, y);
+    }
+    c.lineTo(X(xmax), y1); c.lineTo(X(xmin), y1); c.closePath();
+    c.fillStyle = pk > 700 ? 'rgba(143,161,191,0.25)' : rgba(col, 0.55); c.fill();
+    c.strokeStyle = pk > 700 ? '#8fa1bf' : col; c.lineWidth = 2; c.stroke();
+    c.fillStyle = pk > 700 ? '#8fa1bf' : '#fff'; c.font = 'bold 11px "Noto Sans KR"'; c.textAlign = 'center';
+    const lab = opts.labels ? opts.labels[pi] : `${pk.toFixed(0)} nm`;
+    c.fillText(lab, clamp(X(pk), x0 + 22, x1 - 22), y0 + (opts.visibleBox ? 30 : 12) + (opts.labels ? (pi % 2) * 12 : 0));
+  });
+}
+
+/* ================= scene 1 : principle ================= */
+const L0 = 640, N_AVG = 1.6;
+function strain1(lt) { const T = 6, p = (lt % T) / T; return 0.85 * (p < 0.5 ? ease(p / 0.5) : 1 - ease((p - 0.5) / 0.5)); }
+function drawFilm1(e) {
+  const svg = $('film1');
+  const lam = lambdaOf(L0, e), col = wl2rgb(lam);
+  const w0 = 150, w = w0 * (1 + e), h = 250 / Math.sqrt(1 + e), cx = 196, cy = 225, clampW = 26;
+  svg.innerHTML = `
+    <defs>
+      <linearGradient id="g1" x1="0" x2="1"><stop offset="0" stop-color="${col}" stop-opacity="0.75"/><stop offset="0.5" stop-color="${col}"/><stop offset="1" stop-color="${col}" stop-opacity="0.75"/></linearGradient>
+      <linearGradient id="sheen" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#fff" stop-opacity="0.35"/><stop offset="0.35" stop-color="#fff" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity="0.25"/></linearGradient>
+    </defs>
+    <rect x="0" y="0" width="392" height="498" fill="#0a0d14"/>
+    <rect x="0" y="380" width="392" height="118" fill="#151a24"/>
+    <line x1="0" y1="380" x2="392" y2="380" stroke="#2a3140"/>
+    <rect x="${cx - w/2 - clampW}" y="${cy - h/2 - 10}" width="${clampW}" height="${h + 20}" rx="3" fill="#9aa3b2"/>
+    <rect x="${cx + w/2}" y="${cy - h/2 - 10}" width="${clampW}" height="${h + 20}" rx="3" fill="#9aa3b2"/>
+    <rect x="${cx - w/2 - clampW - 40}" y="${cy - 6}" width="40" height="12" fill="#6b7382"/>
+    <rect x="${cx + w/2 + clampW}" y="${cy - 6}" width="40" height="12" fill="#6b7382"/>
+    <rect x="${cx - w/2}" y="${cy - h/2}" width="${w}" height="${h}" rx="4" fill="url(#g1)"/>
+    <rect x="${cx - w/2}" y="${cy - h/2}" width="${w}" height="${h}" rx="4" fill="url(#sheen)"/>
+    <text x="${cx}" y="${cy + h/2 + 34}" text-anchor="middle" font-size="12" fill="#cbd5e1">← ${e > 0.02 ? '인장 중' : '이완 상태'} ε = ${fmt(e*100,0)} % →</text>`;
+}
+function drawHelix1(e) {
+  const svg = $('helix1');
+  const P0 = L0 / N_AVG, P = lambdaOf(L0, e) / N_AVG, col = wl2rgb(lambdaOf(L0, e));
+  const scale = 0.42, layers = 25, cx = 128, top = 104, dz = P * scale / 12;
+  let rods = '';
+  for (let i = 0; i < layers; i++) {
+    const y = top + i * dz, ang = i * Math.PI / 6, L = 84;
+    const dx = L / 2 * Math.cos(ang), dy = L / 2 * Math.sin(ang) * 0.32;
+    rods += `<line x1="${cx - dx}" y1="${y - dy}" x2="${cx + dx}" y2="${y + dy}" stroke="${i % 12 === 0 ? '#fde68a' : '#93c5fd'}" stroke-width="7" stroke-linecap="round" opacity="0.95"/>`;
+  }
+  const yP0 = top, yP1 = top + 12 * dz, totalH = (layers - 1) * dz;
+  svg.innerHTML = `
+    <rect x="0" y="0" width="456" height="498" fill="#0e1729"/>
+    <text x="24" y="40" fill="#8fa1bf" font-size="12">액정 분자(막대)가 층마다 조금씩 회전하며 쌓임 → 나선 구조</text>
+    <text x="24" y="62" fill="#e2e8f0" font-size="13" font-weight="700">한 바퀴 도는 길이 = 피치 P (노란 막대 → 다음 노란 막대)</text>
+    <path d="M ${cx - 70} ${top - 14} H ${cx + 70} M ${cx - 70} ${top + totalH + 14} H ${cx + 70}" stroke="#33456a"/>
+    <text x="${cx}" y="${top + totalH + 32}" text-anchor="middle" fill="#8fa1bf" font-size="11">필름 두께 방향 ↕</text>
+    ${rods}
+    <path d="M ${cx + 66} ${yP0} h 14 M ${cx + 66} ${yP1} h 14 M ${cx + 73} ${yP0} V ${yP1}" stroke="#fde68a" stroke-width="1.5" fill="none"/>
+    <text x="${cx + 73}" y="${yP1 + 18}" text-anchor="middle" fill="#fde68a" font-size="12" font-weight="700">P = ${fmt(P, 0)} nm</text>
+    <g transform="translate(262,92)">
+      <rect x="0" y="0" width="170" height="112" rx="8" fill="#111b30" stroke="#24334f"/>
+      <text x="85" y="22" text-anchor="middle" fill="#8fa1bf" font-size="11">Bragg 반사 조건</text>
+      <text x="85" y="50" text-anchor="middle" fill="#e2e8f0" font-size="20" font-weight="900">λ = n · P</text>
+      <text x="85" y="70" text-anchor="middle" fill="#8fa1bf" font-size="11">n ≈ ${N_AVG} (평균 굴절률)</text>
+      <rect x="35" y="80" width="100" height="22" rx="5" fill="${col}"/>
+      <text x="85" y="96" text-anchor="middle" fill="#0b1220" font-size="12" font-weight="900">λ = ${fmt(lambdaOf(L0, e), 0)} nm</text>
+    </g>
+    <g transform="translate(262,218)">
+      <rect x="0" y="0" width="170" height="104" rx="8" fill="#111b30" stroke="#24334f"/>
+      <text x="85" y="22" text-anchor="middle" fill="#8fa1bf" font-size="11">옆으로 늘리면 (변형률 ε)</text>
+      <text x="85" y="44" text-anchor="middle" fill="#e2e8f0" font-size="12">고무가 얇아지면서</text>
+      <text x="85" y="62" text-anchor="middle" fill="#e2e8f0" font-size="12">나선도 같이 눌린다</text>
+      <text x="85" y="90" text-anchor="middle" fill="#fde68a" font-size="14" font-weight="900">P ↓ → λ ↓ (청색 이동)</text>
+    </g>
+    <g transform="translate(262,338)">
+      <rect x="0" y="0" width="170" height="120" rx="8" fill="#111b30" stroke="#24334f"/>
+      <text x="14" y="22" fill="#8fa1bf" font-size="11">피치 비교</text>
+      <rect x="14" y="34" width="${P0 * 0.36}" height="12" rx="3" fill="#3b4c6e"/>
+      <text x="14" y="62" fill="#8fa1bf" font-size="11">이완 P₀ = ${fmt(P0, 0)} nm</text>
+      <rect x="14" y="74" width="${P * 0.36}" height="12" rx="3" fill="${col}"/>
+      <text x="14" y="102" fill="#e2e8f0" font-size="11" font-weight="700">현재 P = ${fmt(P, 0)} nm (${fmt((1 - P / P0) * 100, 0)} % 감소)</text>
+    </g>`;
+}
+function scene1(lt, dur) {
+  const e = strain1(lt), lam = lambdaOf(L0, e), P = lam / N_AVG;
+  drawFilm1(e); drawHelix1(e); drawSpectrum($('spec1'), lam);
+  $('c1e').textContent = fmt(e * 100, 0) + ' %'; setBar('c1eb', e / 0.85);
+  $('c1p').textContent = fmt(P, 0) + ' nm'; setBar('c1pb', P / (L0 / N_AVG));
+  $('c1l').textContent = fmt(lam, 0) + ' nm'; setBar('c1lb', (lam - 380) / (780 - 380)); $('c1sw').style.background = wl2rgb(lam);
+  setProg(1, lt, dur);
+}
+
+/* ================= scene 2 : multi-pixel ================= */
+const K2 = [[0.9, 0.5, 0.7], [0.45, 0.15, 0.55], [0.75, 0.35, 1.0]];   // local-strain factor per pixel (design)
+const L0_2 = 650;
+const strain2 = (lt) => seq(lt, [[0, 7, 0, 0.38], [7, 13.5, 0.38, 0]], 0); // synced to the clip (stretch then release)
+function pixelLams(e) { return K2.flat().map((k) => lambdaOf(L0_2, k * e)); }
+function drawGrid2(e) {
+  const svg = $('grid2');
+  const s = 96, gap = 6, ox = 40, oy = 96;
+  let cells = '';
+  K2.forEach((row, i) => row.forEach((k, j) => {
+    const le = k * e, lam = lambdaOf(L0_2, le), col = wl2rgb(lam);
+    const x = ox + j * (s + gap), y = oy + i * (s + gap);
+    cells += `<rect x="${x}" y="${y}" width="${s}" height="${s}" rx="6" fill="${col}"/>
+      <rect x="${x}" y="${y}" width="${s}" height="${s}" rx="6" fill="url(#sh2)"/>
+      <text x="${x + s/2}" y="${y + 40}" text-anchor="middle" fill="#0b1220" font-size="11" font-weight="700" opacity="0.8">설계 계수 ${k.toFixed(2)}</text>
+      <text x="${x + s/2}" y="${y + 62}" text-anchor="middle" fill="#0b1220" font-size="14" font-weight="900">ε = ${fmt(le*100,0)} %</text>
+      <text x="${x + s/2}" y="${y + 80}" text-anchor="middle" fill="#0b1220" font-size="11" opacity="0.85">${fmt(lam,0)} nm</text>`;
+  }));
+  const gw = 3 * s + 2 * gap;
+  svg.innerHTML = `
+    <defs><linearGradient id="sh2" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#fff" stop-opacity="0.28"/><stop offset="0.5" stop-color="#fff" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity="0.18"/></linearGradient></defs>
+    <rect x="0" y="0" width="456" height="498" fill="#0e1729"/>
+    <text x="24" y="40" fill="#8fa1bf" font-size="12">픽셀마다 '얼마나 잘 늘어나는지'를 설계 계수로 정해 둠 (두께 · 경계 강성)</text>
+    <text x="24" y="62" fill="#e2e8f0" font-size="13" font-weight="700">필름 전체 변형률 ε = ${fmt(e*100,0)} %  →  픽셀별 국소 변형률 = 계수 × ε</text>
+    ${cells}
+    <g fill="#8fa1bf" font-size="11">
+      <text x="${ox - 20}" y="${oy + 140}" text-anchor="end" fill="#4da3ff" font-weight="700">←</text>
+      <text x="${ox + gw + 20}" y="${oy + 140}" fill="#4da3ff" font-weight="700">→</text>
+    </g>
+    <g transform="translate(24,418)">
+      <rect x="0" y="0" width="408" height="60" rx="8" fill="#111b30" stroke="#24334f"/>
+      <text x="16" y="24" fill="#e2e8f0" font-size="12">설계 계수가 클수록 많이 늘어나 <tspan fill="#35d39a" font-weight="700">초록·파랑</tspan>, 작을수록 <tspan fill="#ff6b6b" font-weight="700">빨강</tspan>에 머무름</text>
+      <text x="16" y="46" fill="#8fa1bf" font-size="11">하나의 입력(전체 인장)으로 아홉 개의 서로 다른 출력(색) → 매트릭스 구동 픽셀 광소자</text>
+    </g>`;
+}
+function drawBars2(canvas, lams) {
+  const c = canvas.getContext('2d'), W = canvas.width, H = canvas.height;
+  c.clearRect(0, 0, W, H); c.fillStyle = '#111b30'; c.fillRect(0, 0, W, H);
+  const x0 = 40, x1 = W - 14, y0 = 26, y1 = H - 30;
+  const Y = (l) => y1 - (l - 500) / (680 - 500) * (y1 - y0);
+  c.strokeStyle = '#33456a'; c.beginPath(); c.moveTo(x0, y0); c.lineTo(x0, y1); c.lineTo(x1, y1); c.stroke();
+  c.fillStyle = '#8fa1bf'; c.font = '10px "Noto Sans KR"'; c.textAlign = 'right';
+  for (let l = 500; l <= 680; l += 60) c.fillText(l, x0 - 4, Y(l) + 3);
+  c.textAlign = 'left'; c.fillText('반사 파장 (nm) · 픽셀 1–9', x0, 14);
+  const bw = (x1 - x0) / 9;
+  lams.forEach((l, i) => {
+    const col = wl2rgb(l); c.fillStyle = col;
+    c.fillRect(x0 + i * bw + 4, Y(l), bw - 8, y1 - Y(l));
+    c.fillStyle = '#8fa1bf'; c.textAlign = 'center'; c.fillText(i + 1, x0 + i * bw + bw / 2, H - 12);
+  });
+}
+function scene2(lt, dur) {
+  const e = strain2(lt), lams = pixelLams(e);
+  drawGrid2(e); drawBars2($('bars2'), lams); setClip('clip-s2', lt);
+  const sorted = [...lams].sort((a, b) => a - b);
+  let n = 1; for (let i = 1; i < sorted.length; i++) if (sorted[i] - sorted[i - 1] > 8) n++;
+  const spread = sorted[8] - sorted[0];
+  $('c2e').textContent = fmt(e * 100, 0) + ' %'; setBar('c2eb', e / 0.4);
+  $('c2n').innerHTML = `${n} <small>/ 9 픽셀</small>`; setBar('c2nb', n / 9);
+  $('c2w').textContent = fmt(spread, 0) + ' nm'; setBar('c2wb', spread / 110);
+  setProg(2, lt, dur);
+}
+
+/* ================= scene 3 : encryption / camouflage ================= */
+const PIX = [{ ch: '머리', l0: 790 }, { ch: '몸통', l0: 830 }, { ch: '다리', l0: 870 }, { ch: '꼬리', l0: 910 }];
+const strain3 = (lt) => seq(lt, [[0, 0.8, 0, 0], [0.8, 9.5, 0, 0.9], [9.5, 10.5, 0.9, 0.9], [10.5, 14, 0.9, 0]], 0); // synced to the clip
+function drawCross3(e) {
+  const svg = $('cross3');
+  const baseY = 250;
+  const seg = PIX.map((p, i) => {
+    const lam = lambdaOf(p.l0, e), vis = lam <= 700, col = wl2rgb(lam);
+    const th = 34 + i * 14, x = 40 + i * 96, w = 84;
+    const n = Math.round(th / (lam / 60)); const lines = [];
+    for (let j = 0; j < n; j++) lines.push(`<line x1="${x}" y1="${baseY - th + j * (th / n)}" x2="${x + w}" y2="${baseY - th + j * (th / n)}" stroke="${vis ? col : '#3b4c6e'}" stroke-width="1"/>`);
+    return `<g>
+      <rect x="${x}" y="${baseY - th}" width="${w}" height="${th}" fill="${vis ? col : '#1c2740'}" opacity="${vis ? 0.35 : 1}"/>
+      ${lines.join('')}
+      <rect x="${x}" y="${baseY - th}" width="${w}" height="${th}" fill="none" stroke="#5b6b8a"/>
+      <text x="${x + w/2}" y="${baseY + 18}" text-anchor="middle" fill="#e2e8f0" font-size="13" font-weight="900">${p.ch}</text>
+      <text x="${x + w/2}" y="${baseY + 34}" text-anchor="middle" fill="#8fa1bf" font-size="10">두께 ${th}</text>
+      <text x="${x + w/2}" y="${baseY - th - 8}" text-anchor="middle" fill="${vis ? col : '#8fa1bf'}" font-size="11" font-weight="700">${fmt(lam,0)} nm ${vis ? '' : '(IR)'}</text>
+    </g>`;
+  }).join('');
+  svg.innerHTML = `
+    <rect x="0" y="0" width="456" height="498" fill="#0e1729"/>
+    <text x="24" y="40" fill="#8fa1bf" font-size="12">단면도 · 그림 부위마다 필름 두께(=나선 층 수)를 다르게 설계</text>
+    <text x="24" y="62" fill="#e2e8f0" font-size="13" font-weight="700">같은 힘으로 당겨도 부위마다 색이 다르게 나타난다</text>
+    <line x1="24" y1="${baseY}" x2="432" y2="${baseY}" stroke="#5b6b8a" stroke-width="2"/>
+    <text x="24" y="${baseY + 52}" fill="#5d6f8f" font-size="10">▬ 신축성 기판 위에 올린 CLCE 필름 단면 (두께: 상대값)</text>
+    ${seg}
+    <g transform="translate(24,318)">
+      <rect x="0" y="0" width="408" height="150" rx="8" fill="#111b30" stroke="#24334f"/>
+      <text x="16" y="26" fill="#8fa1bf" font-size="11">설계 아이디어</text>
+      <text x="16" y="52" fill="#e2e8f0" font-size="13">① 이완 상태의 반사 파장을 <tspan fill="#fde68a" font-weight="700">적외선(&gt;700 nm)</tspan>에 숨긴다 → 투명해 보임</text>
+      <text x="16" y="78" fill="#e2e8f0" font-size="13">② 당기면 파장이 짧아져 <tspan fill="#4da3ff" font-weight="700">가시광</tspan>으로 들어온다 → 그림이 나타남</text>
+      <text x="16" y="104" fill="#e2e8f0" font-size="13">③ 두께로 부위별 시작 파장을 <tspan fill="#ff6b9a" font-weight="700">프로그래밍</tspan> → 열쇠(변형률)마다 다른 답</text>
+      <text x="16" y="132" fill="#8fa1bf" font-size="11">얼마나 당기느냐가 '비밀번호'가 되는 광 암호화 · 카멜레온식 광학 위장</text>
+    </g>`;
+}
+function scene3(lt, dur) {
+  const e = strain3(lt);
+  const lams = PIX.map((p) => lambdaOf(p.l0, e));
+  const nvis = lams.filter((l) => l <= 700).length;
+  drawCross3(e); drawSpectrum($('spec3'), lams, { xmin: 380, xmax: 960, visibleBox: true, labels: ['', '', '', ''] }); setClip('clip-s3', lt);
+  $('c3e').textContent = fmt(e * 100, 0) + ' %'; setBar('c3eb', e / 0.9);
+  $('c3s').textContent = nvis === 0 ? '🔒 숨김' : nvis < 4 ? '🔓 해독 중' : '✅ 해독 완료'; setBar('c3sb', nvis / 4);
+  $('c3n').innerHTML = `${nvis} <small>/ 4 구역</small>`; setBar('c3nb', nvis / 4);
+  setProg(3, lt, dur);
+}
+
+/* ================= scene 4 : simulation ================= */
+function scene4(lt, dur) {
+  setClip('clip-s4a', lt); setClip('clip-s4b', lt);
+  setProg(4, lt, dur);
+}
+
+/* ================= scene 5 : biosensor ================= */
+const L0_5 = 650;
+const angle5 = (lt) => seq(lt, [[0.8, 3.2, 0, 90], [3.2, 4.4, 90, 90], [4.4, 6.4, 90, 0], [7.2, 9.0, 0, 45], [9.0, 10.5, 45, 45], [10.5, 12.0, 45, 0], [12.6, 14.6, 0, 90], [14.6, 16.0, 90, 0]], 0);
+const strainOfAngle = (deg) => 0.55 * deg / 90;
+function drawHand5(deg) {
+  const svg = $('hand5');
+  const e = strainOfAngle(deg), lam = lambdaOf(L0_5, e), col = wl2rgb(lam);
+  const kx = 150, ky = 250, r = 20, a = deg * Math.PI / 180;
+  const p1x = kx - 100, p2x = kx + 105 * Math.cos(a), p2y = ky + 105 * Math.sin(a);
+  const skin = '#d9a883', skinD = '#c48d6a', patchR = r + 9;
+  const a0 = -Math.PI / 2 - 0.9, a1 = -Math.PI / 2 + 0.9 + a;
+  const arc = (rr, s, t) => `M ${kx + rr * Math.cos(s)} ${ky + rr * Math.sin(s)} A ${rr} ${rr} 0 ${t - s > Math.PI ? 1 : 0} 1 ${kx + rr * Math.cos(t)} ${ky + rr * Math.sin(t)}`;
+  svg.innerHTML = `
+    <rect x="0" y="0" width="300" height="498" fill="#0e1729"/>
+    <text x="20" y="34" fill="#8fa1bf" font-size="12">관절이 굽으면 패치가 늘어나고</text>
+    <text x="20" y="54" fill="#e2e8f0" font-size="13" font-weight="700">늘어난 만큼 색이 바뀐다</text>
+    <rect x="${p1x - 60}" y="${ky - 56}" width="70" height="140" rx="24" fill="${skinD}"/>
+    <line x1="${p1x}" y1="${ky}" x2="${kx}" y2="${ky}" stroke="${skin}" stroke-width="${r*2}" stroke-linecap="round"/>
+    <line x1="${kx}" y1="${ky}" x2="${p2x}" y2="${p2y}" stroke="${skin}" stroke-width="${r*2}" stroke-linecap="round"/>
+    <circle cx="${kx}" cy="${ky}" r="${r}" fill="${skin}"/>
+    <path d="${arc(r - 6, -Math.PI/2 - 0.6, -Math.PI/2 + 0.6 + a)}" stroke="${skinD}" stroke-width="2" fill="none" opacity="0.6"/>
+    <path d="${arc(patchR, a0, a1)}" stroke="${col}" stroke-width="13" stroke-linecap="round" fill="none"/>
+    <path d="${arc(patchR, a0, a1)}" stroke="#fff" stroke-width="3" stroke-linecap="round" fill="none" opacity="0.25" transform="translate(0,-4)"/>
+    <text x="${kx}" y="${ky - patchR - 24}" text-anchor="middle" fill="#e2e8f0" font-size="12">CLCE 패치 · ${fmt(lam,0)} nm</text>
+    <line x1="${kx}" y1="${ky - patchR - 18}" x2="${kx}" y2="${ky - patchR - 6}" stroke="#8fa1bf"/>
+    <g transform="translate(20,400)">
+      <text x="0" y="0" fill="#8fa1bf" font-size="11">판독 순서</text>
+      <text x="0" y="22" fill="#e2e8f0" font-size="12">📷 촬영 → 색(파장) 추출 → 교정 곡선 → <tspan fill="#ffb54d" font-weight="700">변형률 · 각도</tspan></text>
+      <text x="0" y="48" fill="#8fa1bf" font-size="11">색과 변형률은 물리식(λ = n·P)으로 1:1 대응</text>
+      <text x="0" y="66" fill="#8fa1bf" font-size="11">→ 여러 관절을 사진 한 장으로 동시에 판독</text>
+    </g>`;
+}
+function drawTrace5(canvas, lt, deg) {
+  const c = canvas.getContext('2d'), W = canvas.width, H = canvas.height;
+  c.clearRect(0, 0, W, H); c.fillStyle = '#111b30'; c.fillRect(0, 0, W, H);
+  const x0 = 36, x1 = W - 12, y0 = 22, y1 = H - 26, win = 16;
+  c.strokeStyle = '#33456a'; c.beginPath(); c.moveTo(x0, y0); c.lineTo(x0, y1); c.lineTo(x1, y1); c.stroke();
+  c.fillStyle = '#8fa1bf'; c.font = '10px "Noto Sans KR"'; c.textAlign = 'right';
+  [0, 30, 60].forEach((v) => c.fillText(v + '%', x0 - 4, y1 - v / 60 * (y1 - y0) + 3));
+  c.textAlign = 'left'; c.fillText('변형률 ε (시간)', x0, 14);
+  c.textAlign = 'center'; for (let s = 0; s <= win; s += 4) c.fillText(s + 's', x0 + s / win * (x1 - x0), H - 8);
+  c.lineWidth = 2;
+  for (let s = 0; s < lt; s += 0.05) {
+    const e1 = strainOfAngle(angle5(s)), e2 = strainOfAngle(angle5(s + 0.05));
+    c.strokeStyle = wl2rgb(lambdaOf(L0_5, e1));
+    c.beginPath(); c.moveTo(x0 + s / win * (x1 - x0), y1 - e1 / 0.6 * (y1 - y0)); c.lineTo(x0 + (s + 0.05) / win * (x1 - x0), y1 - e2 / 0.6 * (y1 - y0)); c.stroke();
+  }
+  const e = strainOfAngle(deg);
+  c.fillStyle = '#fff'; c.beginPath(); c.arc(x0 + lt / win * (x1 - x0), y1 - e / 0.6 * (y1 - y0), 4, 0, Math.PI * 2); c.fill();
+}
+function scene5(lt, dur) {
+  const deg = angle5(lt), e = strainOfAngle(deg), lam = lambdaOf(L0_5, e);
+  drawHand5(deg); drawTrace5($('trace5'), lt, deg); setClip('clip-s5', lt);
+  $('c5a').textContent = fmt(deg, 0) + '°'; setBar('c5ab', deg / 90);
+  $('c5e').textContent = fmt(e * 100, 0) + ' %'; setBar('c5eb', e / 0.6); $('c5sw').style.background = wl2rgb(lam);
+  setProg(5, lt, dur);
+}
+
+/* ---------------- master seek ---------------- */
+window.seek = async function (t) {
+  t = clamp(t, 0, TOTAL - 0.001);
+  let active = null;
+  for (const s of SCENES) if (t >= s.start && t < s.start + s.dur) active = s;
+  document.querySelectorAll('.scene').forEach((el) => { const on = el.id === active.id; el.classList.toggle('on', on); if (!on) el.style.opacity = 0; });
+  const lt = t - active.start;
+  const fadeIn = ease(lt / 0.4), fadeOut = ease((active.dur - lt) / 0.4);
+  $(active.id).style.opacity = Math.min(fadeIn, fadeOut);
+  switch (active.id) {
+    case 'intro': runFx($('intro'), lt); break;
+    case 'outro': runFx($('outro'), lt); break;
+    case 's1': scene1(lt, active.dur); break;
+    case 's2': scene2(lt, active.dur); break;
+    case 's3': scene3(lt, active.dur); break;
+    case 's4': scene4(lt, active.dur); break;
+    case 's5': scene5(lt, active.dur); break;
+  }
+  // wait for any clip frame that is still decoding
+  await Promise.all([...document.querySelectorAll('img.clip')].map((im) => im.complete || !im.src ? 1 : new Promise((r) => { im.onload = im.onerror = r; })));
+  return active.id;
+};
+window.ready = (async () => {
+  await document.fonts.ready;
+  await Promise.all([...document.images].map((im) => im.complete || !im.src ? 1 : new Promise((r) => { im.onload = im.onerror = r; })));
+  // preload every clip frame so seeking is instant and deterministic
+  const jobs = [];
+  for (const c of Object.values(CLIPS)) for (let i = 1; i <= c.count; i++) {
+    const im = new Image(); im.src = `${c.dir}/f${String(i).padStart(4, '0')}.jpg`;
+    jobs.push(new Promise((r) => { im.onload = im.onerror = r; }));
+  }
+  await Promise.all(jobs);
+  return true;
+})();
+
+/* live preview when opened in a browser (renderer drives seek() itself) */
+if (!navigator.webdriver) {
+  let t0 = performance.now();
+  (function loop() { const t = ((performance.now() - t0) / 1000) % TOTAL; window.seek(t); requestAnimationFrame(loop); })();
+}
+</script>
+</body>
+</html>

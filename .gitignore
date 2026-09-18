@@ -1,1 +1,7 @@
 .claude/
+
+# lions-video: generated frames / renders / local fonts
+lions-video/clips/*/
+!lions-video/clips/src/
+lions-video/out/
+lions-video/fonts/
