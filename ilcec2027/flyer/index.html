@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>ILCEC 2027 First Announcement</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  @font-face { font-family: "Manrope"; font-weight: 500; src: url("fonts/manrope-latin-500-normal.woff2") format("woff2"); }
+  @font-face { font-family: "Manrope"; font-weight: 700; src: url("fonts/manrope-latin-700-normal.woff2") format("woff2"); }
+  @font-face { font-family: "Manrope"; font-weight: 800; src: url("fonts/manrope-latin-800-normal.woff2") format("woff2"); }
+  @font-face { font-family: "Inter"; font-weight: 400; src: url("fonts/inter-latin-400-normal.woff2") format("woff2"); }
+  @font-face { font-family: "Inter"; font-weight: 500; src: url("fonts/inter-latin-500-normal.woff2") format("woff2"); }
+  @font-face { font-family: "Inter"; font-weight: 600; src: url("fonts/inter-latin-600-normal.woff2") format("woff2"); }
+  @font-face { font-family: "Inter"; font-weight: 700; src: url("fonts/inter-latin-700-normal.woff2") format("woff2"); }
+
+  :root {
+    --navy: #1b2450;
+    --navy-2: #2c3a7a;
+    --ink: #262b3d;
+    --muted: #5b6079;
+    --accent: #d8432f;
+    --accent-2: #f0a35a;
+    --lilac: #eceef8;
+    --lilac-2: #dfe3f4;
+    --line: #cfd4ea;
+    --white: #ffffff;
+    --tbd: #b8402f;
+    --tbd-bg: #fff1ee;
+  }
+
+  @page { size: A4; margin: 0; }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; background: #d9dbe6; }
+  body { font-family: "Inter", "Helvetica Neue", Arial, sans-serif; color: var(--ink); -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+
+  .page {
+    position: relative;
+    width: 210mm; height: 297mm;
+    margin: 0 auto;
+    background: var(--white);
+    overflow: hidden;
+    padding: 11mm 12mm 9mm 12mm;
+    display: flex; flex-direction: column;
+  }
+  @media screen { .page { margin: 16px auto; box-shadow: 0 8px 40px rgba(20, 25, 60, .25); } }
+
+  /* soft corner wash, like the 2025 flyer */
+  .wash { position: absolute; inset: 0; pointer-events: none; z-index: 0; }
+  .wash::before { content: ""; position: absolute; right: -60mm; top: -50mm; width: 150mm; height: 150mm; border-radius: 50%;
+    background: radial-gradient(closest-side, rgba(216, 67, 47, .16), rgba(216, 67, 47, 0)); }
+  .wash::after { content: ""; position: absolute; left: -70mm; bottom: -60mm; width: 170mm; height: 170mm; border-radius: 50%;
+    background: radial-gradient(closest-side, rgba(44, 58, 122, .16), rgba(44, 58, 122, 0)); }
+
+  .content { position: relative; z-index: 1; display: flex; flex-direction: column; height: 100%; }
+
+  /* ---------- hero ---------- */
+  .hero { position: relative; height: 48mm; border-radius: 3mm; overflow: hidden; background: #1b2450; flex: none; }
+  .hero svg.sky { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+  .hero .photo { position: absolute; inset: 0; background-position: center; background-size: cover; opacity: 0; }
+  .hero.has-photo .photo { opacity: 1; }
+  .hero.has-photo svg.sky { display: none; }
+  .hero .tag { position: absolute; left: 5mm; bottom: 4mm; color: #fff; font-family: "Manrope"; font-weight: 700; font-size: 8.5pt; letter-spacing: .12em; text-transform: uppercase; opacity: .92; }
+  .hero .tag span { display: inline-block; padding: 1.2mm 2.4mm; border: 1px solid rgba(255,255,255,.55); border-radius: 1mm; backdrop-filter: blur(2px); background: rgba(27,36,80,.35); }
+
+  /* director-field motif (nematic rods) */
+  .motif { position: absolute; pointer-events: none; }
+  .motif.m1 { right: -3mm; top: -5mm; width: 36mm; height: 36mm; opacity: .95; }
+  .motif.m2 { left: 133mm; top: 49mm; width: 15mm; height: 15mm; opacity: .95; }
+  .motif.m3 { display: none; }
+
+  /* ---------- title ---------- */
+  .titlebar { display: flex; align-items: flex-end; gap: 6mm; margin-top: 5mm; }
+  h1 { font-family: "Manrope"; font-weight: 800; font-size: 26pt; line-height: 1.02; letter-spacing: -.015em; color: var(--navy); margin: 0; flex: 1 1 auto; }
+  .when { flex: none; text-align: left; font-family: "Manrope"; font-weight: 700; color: var(--navy-2); font-size: 10.5pt; line-height: 1.25; padding-bottom: 1mm; min-width: 52mm; }
+  .when .big { font-size: 15pt; font-weight: 800; color: var(--accent); letter-spacing: -.01em; display: block; margin-bottom: .6mm; }
+
+  .intro { margin: 3mm 0 0; font-size: 8.6pt; line-height: 1.4; color: var(--navy-2); font-weight: 500; }
+  .intro b { color: var(--navy); font-weight: 700; }
+
+  /* ---------- body columns ---------- */
+  .cols { display: grid; grid-template-columns: 1fr 1fr; column-gap: 7mm; margin-top: 4mm; flex: 1 1 auto; min-height: 0; }
+  .col { display: flex; flex-direction: column; gap: 2.2mm; min-height: 0; }
+
+  h3 { font-family: "Manrope"; font-weight: 800; font-size: 8.6pt; letter-spacing: .02em; color: var(--accent); margin: 0 0 .9mm; text-transform: none; }
+  p, li { font-size: 7.6pt; line-height: 1.36; margin: 0; color: var(--ink); }
+  p + p { margin-top: 1mm; }
+  b, strong { font-weight: 700; color: var(--navy); }
+  .sub { font-weight: 700; color: var(--navy); }
+  a { color: var(--navy-2); text-decoration: underline; text-decoration-color: var(--line); text-underline-offset: 1.5px; }
+  ul { list-style: none; padding: 0; margin: 0; }
+  ul li + li { margin-top: .5mm; }
+  .dates li { display: flex; gap: 2mm; }
+  .dates .d { flex: 0 0 22mm; font-weight: 700; color: var(--navy); }
+
+  .tbd { display: inline-block; font-family: "Manrope"; font-weight: 700; font-size: 7pt; color: var(--tbd); background: var(--tbd-bg); border: 1px dashed rgba(184, 64, 47, .55); border-radius: .8mm; padding: 0 1.3mm; line-height: 1.6; letter-spacing: .04em; vertical-align: baseline; }
+
+  /* ---------- photos ---------- */
+  .photos { display: grid; gap: 2.4mm; margin-top: auto; }
+  .photos.grid-1 { grid-template-columns: 1fr; grid-template-rows: 26mm; }
+  .photos.grid-2 { grid-template-columns: 1fr 1fr; grid-template-rows: 20mm; }
+  .ph { position: relative; border-radius: 2mm; overflow: hidden; background: linear-gradient(135deg, #e7e9f5, #d5d9ee); }
+  .ph .img { position: absolute; inset: 0; background-position: center; background-size: cover; opacity: 0; }
+  .ph.has-photo .img { opacity: 1; }
+  .ph .label { position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: flex-end; padding: 2.2mm 2.6mm; color: var(--navy-2); }
+  .ph.has-photo .label { display: none; }
+  .ph .label .t { font-family: "Manrope"; font-weight: 800; font-size: 7.6pt; color: var(--navy); }
+  .ph .label .s { font-size: 6.4pt; line-height: 1.3; color: var(--muted); margin-top: .6mm; }
+  .ph .label .k { font-size: 6.2pt; color: var(--accent); font-weight: 600; margin-top: .6mm; }
+  .ph .glyph { position: absolute; right: 2.4mm; top: 2.2mm; width: 8mm; height: 8mm; opacity: .8; }
+  .ph.has-photo .glyph { display: none; }
+
+  /* ---------- footer ---------- */
+  .footer { margin-top: 3mm; padding-top: 2.4mm; border-top: 1px solid var(--line); display: flex; align-items: center; gap: 4mm; flex: none; }
+  .footer .logos { display: flex; gap: 2.4mm; align-items: center; }
+  .logo-slot { height: 9mm; min-width: 22mm; border: 1px dashed var(--line); border-radius: 1.2mm; display: flex; align-items: center; justify-content: center; font-size: 6.2pt; color: var(--muted); padding: 0 2mm; font-weight: 500; letter-spacing: .02em; }
+  .logo-slot img { height: 7.5mm; width: auto; }
+  .footer .credits { margin-left: auto; text-align: right; font-size: 6.1pt; color: var(--muted); line-height: 1.35; max-width: 78mm; }
+  .footer .credits b { color: var(--navy-2); font-weight: 600; }
+
+  .draft-ribbon { position: absolute; z-index: 5; right: -21mm; top: 10mm; transform: rotate(45deg); background: var(--accent); color: #fff; font-family: "Manrope"; font-weight: 800; font-size: 7.5pt; letter-spacing: .18em; padding: 1.4mm 24mm; box-shadow: 0 2px 8px rgba(0,0,0,.25); }
+  body.final .draft-ribbon { display: none; }
+</style>
+</head>
+<body>
+<div class="page">
+  <div class="wash"></div>
+  <div class="draft-ribbon">DRAFT · TBD</div>
+
+  <div class="content">
+
+    <!-- ===================== HERO ===================== -->
+    <div class="hero" id="hero">
+      <!-- Drop the real panorama into photos/hero-seoul.jpg (landscape, ≥ 2400 px wide) and it replaces the illustration automatically. -->
+      <div class="photo" data-src="photos/hero-seoul.jpg"></div>
+
+      <svg class="sky" viewBox="0 0 1000 330" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg" aria-label="Stylised Seoul skyline at dusk: Namsan and N Seoul Tower, the Han River, Lotte World Tower and Myeongdong Cathedral">
+        <defs>
+          <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="#151c4a"/>
+            <stop offset=".42" stop-color="#3b3a86"/>
+            <stop offset=".72" stop-color="#9a5d8e"/>
+            <stop offset=".9" stop-color="#ee9a62"/>
+            <stop offset="1" stop-color="#f7c37a"/>
+          </linearGradient>
+          <linearGradient id="river" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="#e58a5e"/>
+            <stop offset=".35" stop-color="#5b4a8f"/>
+            <stop offset="1" stop-color="#1a2150"/>
+          </linearGradient>
+          <linearGradient id="far" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="#5a4d95"/>
+            <stop offset="1" stop-color="#3c3577"/>
+          </linearGradient>
+          <linearGradient id="mid" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="#2b2d6b"/>
+            <stop offset="1" stop-color="#1e2257"/>
+          </linearGradient>
+          <linearGradient id="near" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="#1c2153"/>
+            <stop offset="1" stop-color="#121640"/>
+          </linearGradient>
+          <linearGradient id="gold" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stop-color="#f4c56e"/>
+            <stop offset="1" stop-color="#c98a3a"/>
+          </linearGradient>
+          <radialGradient id="sun" cx=".5" cy=".5" r=".5">
+            <stop offset="0" stop-color="#ffd58a" stop-opacity=".9"/>
+            <stop offset="1" stop-color="#ffd58a" stop-opacity="0"/>
+          </radialGradient>
+          <pattern id="win" width="7" height="9" patternUnits="userSpaceOnUse">
+            <rect x="1" y="1" width="3" height="4" fill="#ffd27a" opacity=".55"/>
+          </pattern>
+        </defs>
+
+        <rect width="1000" height="330" fill="url(#sky)"/>
+        <circle cx="560" cy="236" r="110" fill="url(#sun)"/>
+        <!-- stars -->
+        <g fill="#fff" opacity=".7">
+          <circle cx="60" cy="40" r="1.2"/><circle cx="150" cy="70" r=".9"/><circle cx="240" cy="28" r="1.1"/><circle cx="410" cy="52" r=".8"/>
+          <circle cx="700" cy="36" r="1.1"/><circle cx="860" cy="64" r=".9"/><circle cx="930" cy="26" r="1.2"/><circle cx="520" cy="18" r=".8"/>
+        </g>
+
+        <!-- far mountains (Bukhansan / Gwanaksan) -->
+        <path fill="url(#far)" d="M0 232 L60 200 L110 214 L170 178 L230 206 L300 170 L360 198 L430 176 L500 206 L560 190 L620 210 L690 184 L760 206 L830 172 L900 200 L960 186 L1000 204 L1000 330 L0 330 Z" opacity=".95"/>
+
+        <!-- Namsan with N Seoul Tower -->
+        <path fill="url(#mid)" d="M120 262 C170 210 260 186 330 200 C380 210 420 240 470 262 Z"/>
+        <g>
+          <rect x="304" y="150" width="16" height="16" rx="2" fill="#1e2257"/>
+          <rect x="309.5" y="60" width="5" height="96" fill="#1e2257"/>
+          <rect x="311" y="18" width="2" height="44" fill="#1e2257"/>
+          <ellipse cx="312" cy="98" rx="16" ry="6" fill="#1e2257"/>
+          <rect x="296" y="98" width="32" height="14" rx="4" fill="#1e2257"/>
+          <ellipse cx="312" cy="112" rx="16" ry="5" fill="#1e2257"/>
+          <rect x="298" y="101" width="28" height="3" fill="#ffd27a" opacity=".85"/>
+          <circle cx="312" cy="18" r="2.2" fill="#ff6b5b"/>
+        </g>
+
+        <!-- mid-ground city block -->
+        <g fill="url(#mid)">
+          <rect x="0" y="236" width="42" height="94"/>
+          <rect x="46" y="222" width="30" height="108"/>
+          <rect x="80" y="246" width="26" height="84"/>
+          <rect x="112" y="228" width="22" height="102"/>
+          <rect x="480" y="236" width="24" height="94"/>
+          <rect x="508" y="222" width="34" height="108"/>
+          <rect x="548" y="240" width="20" height="90"/>
+          <rect x="572" y="214" width="30" height="116"/>
+          <rect x="606" y="246" width="22" height="84"/>
+          <rect x="880" y="236" width="30" height="94"/>
+          <rect x="914" y="220" width="24" height="110"/>
+          <rect x="942" y="242" width="58" height="88"/>
+        </g>
+
+        <!-- Myeongdong Cathedral (gothic spire) -->
+        <g fill="#1e2257">
+          <rect x="398" y="214" width="46" height="116"/>
+          <rect x="410" y="150" width="22" height="70"/>
+          <polygon points="408,152 434,152 421,96"/>
+          <rect x="420" y="86" width="2" height="12"/>
+          <rect x="416" y="90" width="10" height="2"/>
+          <g fill="#ffd27a" opacity=".7"><rect x="414" y="168" width="4" height="12"/><rect x="424" y="168" width="4" height="12"/><rect x="414" y="190" width="4" height="12"/><rect x="424" y="190" width="4" height="12"/></g>
+        </g>
+
+        <!-- 63 Building (golden slab) -->
+        <g>
+          <polygon points="640,330 640,150 660,142 660,330" fill="url(#gold)" opacity=".9"/>
+          <polygon points="660,330 660,142 690,150 690,330" fill="#b8792f"/>
+          <rect x="640" y="150" width="50" height="180" fill="url(#win)" opacity=".45"/>
+        </g>
+
+        <!-- Lotte World Tower -->
+        <g>
+          <path d="M770 330 L774 120 C776 60 790 30 800 20 C810 30 824 60 826 120 L830 330 Z" fill="url(#near)"/>
+          <path d="M786 330 L788 140 C790 90 796 50 800 32 L802 330 Z" fill="#2c3a7a" opacity=".8"/>
+          <rect x="799" y="10" width="2" height="26" fill="#1c2153"/>
+          <circle cx="800" cy="10" r="2" fill="#ff6b5b"/>
+          <rect x="776" y="130" width="48" height="196" fill="url(#win)" opacity=".5"/>
+        </g>
+
+        <!-- near skyline -->
+        <g fill="url(#near)">
+          <rect x="140" y="256" width="40" height="74"/>
+          <rect x="184" y="240" width="26" height="90"/>
+          <rect x="214" y="262" width="60" height="68"/>
+          <rect x="280" y="248" width="34" height="82"/>
+          <rect x="320" y="266" width="70" height="64"/>
+          <rect x="450" y="256" width="26" height="74"/>
+          <rect x="700" y="252" width="34" height="78"/>
+          <rect x="738" y="266" width="26" height="64"/>
+          <rect x="836" y="256" width="40" height="74"/>
+        </g>
+        <rect x="0" y="222" width="1000" height="108" fill="url(#win)" opacity=".28"/>
+
+        <!-- Han River with Banpo bridge -->
+        <rect x="0" y="290" width="1000" height="40" fill="url(#river)"/>
+        <g stroke="#f4c56e" stroke-width="1.4" opacity=".75" fill="none">
+          <line x1="0" y1="296" x2="1000" y2="296"/>
+          <path d="M0 296 q30 -10 60 0 q30 -10 60 0 q30 -10 60 0 q30 -10 60 0 q30 -10 60 0 q30 -10 60 0 q30 -10 60 0 q30 -10 60 0 q30 -10 60 0 q30 -10 60 0 q30 -10 60 0 q30 -10 60 0 q30 -10 60 0 q30 -10 60 0 q30 -10 60 0 q30 -10 60 0 q30 -10 60 0" opacity=".55"/>
+        </g>
+        <g fill="#ffd27a" opacity=".35">
+          <rect x="300" y="300" width="1.5" height="26"/><rect x="420" y="300" width="1.5" height="26"/><rect x="655" y="300" width="1.5" height="26"/><rect x="800" y="300" width="1.5" height="26"/>
+        </g>
+      </svg>
+
+      <div class="tag"><span>Seoul · Korea · 2027</span></div>
+    </div>
+
+    <!-- nematic director-field motifs -->
+    <svg class="motif m1" viewBox="-50 -50 100 100" data-defect="0.5" data-n="5"></svg>
+    <svg class="motif m2" viewBox="-50 -50 100 100" data-defect="-0.5" data-n="4"></svg>
+    <svg class="motif m3" viewBox="-50 -50 100 100" data-defect="1" data-n="4"></svg>
+
+    <!-- ===================== TITLE ===================== -->
+    <div class="titlebar">
+      <h1>International Liquid Crystal<br>Elastomer Conference</h1>
+      <div class="when">
+        <span class="big">ILCEC 2027</span>
+        on <span class="tbd">DD–DD Month 2027</span><br>
+        in Seoul, Republic of Korea
+      </div>
+    </div>
+
+    <p class="intro">
+      The International Liquid Crystal Elastomer Conference (ILCEC) will be held in <b>2027 at the Royal Hotel Seoul, Myeongdong</b>, in the heart
+      of Seoul, Republic of Korea. Following ILCEC 2025 in Tampere, ILCEC 2027 will bring together chemists, physicists and engineers to share
+      fundamental advances and application opportunities for this exciting class of materials. The conference will cover, but is not limited to,
+      dynamic and multiresponsive LCEs, soft mechanics and actuation, 4D printing, feedback-driven and autonomous motion, tunable photonics,
+      and novel behaviour and functions of LCEs. Contributions on related stimuli-responsive soft materials are also welcome.
+      We hope you will consider joining us in Seoul!
+    </p>
+
+    <!-- ===================== COLUMNS ===================== -->
+    <div class="cols">
+      <div class="col">
+        <div>
+          <h3>Chairs</h3>
+          <ul>
+            <li><span class="sub"><span class="tbd">Chair name</span></span>, <span class="tbd">Affiliation</span></li>
+            <li><span class="sub"><span class="tbd">Co-chair name</span></span>, <span class="tbd">Affiliation</span></li>
+          </ul>
+        </div>
+        <div>
+          <h3>Organizing committee</h3>
+          <ul>
+            <li><span class="tbd">Member</span>, <span class="tbd">Affiliation</span></li>
+            <li><span class="tbd">Member</span>, <span class="tbd">Affiliation</span></li>
+            <li><span class="tbd">Member</span>, <span class="tbd">Affiliation</span></li>
+          </ul>
+        </div>
+        <div>
+          <h3>International program committee</h3>
+          <p>To be announced with the 2nd announcement.</p>
+        </div>
+        <div>
+          <h3>Contact</h3>
+          <p><span class="tbd">Coordinator name</span>, conference coordinator<br><b><span class="tbd">ilcec2027@___.ac.kr</span></b></p>
+        </div>
+        <div>
+          <h3>Webpage</h3>
+          <p><a><span class="tbd">https://ilcec2027.___</span></a></p>
+        </div>
+        <div>
+          <h3>Important dates</h3>
+          <ul class="dates">
+            <li><span class="d"><span class="tbd">TBD</span></span><span>2nd announcement with keynote speakers and key dates</span></li>
+            <li><span class="d"><span class="tbd">TBD</span></span><span>Abstract submission opens</span></li>
+            <li><span class="d"><span class="tbd">TBD</span></span><span>Abstract submission deadline</span></li>
+            <li><span class="d"><span class="tbd">TBD</span></span><span>Early-bird registration deadline</span></li>
+          </ul>
+        </div>
+
+        <div class="photos grid-1">
+          <div class="ph" data-src="photos/myeongdong.jpg">
+            <div class="img"></div>
+            <svg class="glyph" viewBox="0 0 24 24" fill="none" stroke="#2c3a7a" stroke-width="1.5"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="12" cy="12" r="3.2"/><path d="M8 5l1.2-2h5.6L16 5"/></svg>
+            <div class="label"><div class="t">Myeongdong at night</div><div class="s">Street-level view of the Myeongdong shopping district, a short walk from the venue.</div><div class="k">Photo Korea search: 명동 야경</div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col">
+        <div>
+          <h3>Venue</h3>
+          <p>The conference takes place at the <b>Royal Hotel Seoul</b> (61 Myeongdong-gil, Jung-gu) in the heart of Myeongdong, Seoul's
+          most vibrant shopping and dining district, next to Myeongdong Cathedral and a few minutes' walk from Myeongdong and Euljiro 1-ga
+          subway stations. Seoul is a city of 10 million where 600-year-old royal palaces and hanok villages sit beside a global hub of
+          semiconductor, display and soft-materials research. Gyeongbokgung Palace, Bukchon Hanok Village, Namsan and the Cheonggyecheon
+          stream are all within easy reach of the venue.</p>
+        </div>
+        <div>
+          <h3>Getting there</h3>
+          <p>Incheon International Airport (ICN) is linked to Seoul Station by the AREX express train (about 45 min); the venue is then one
+          subway stop or a 10-minute taxi ride away.</p>
+        </div>
+        <div>
+          <h3>Accommodation</h3>
+          <p>A block of rooms at a conference rate will be pre-reserved at the Royal Hotel Seoul. Myeongdong offers a very wide range of
+          hotels and guesthouses at every price level within walking distance of the venue; details will follow in the 2nd announcement.</p>
+        </div>
+        <div>
+          <h3>Social program <span style="font-weight:600;color:var(--muted);font-size:7pt">(tentative)</span></h3>
+          <p><span class="sub">Welcome reception</span> on <span class="tbd">Day 1</span><br>A welcome reception will be held at the conference hotel on the evening of the first day.</p>
+          <p><span class="sub">Conference dinner</span> on <span class="tbd">Day 3</span><br>A Korean-style banquet in the city centre, with a traditional performance.</p>
+          <p><span class="sub">Cultural afternoon</span> on <span class="tbd">Day 4</span><br>Guided visit to Gyeongbokgung Palace and Bukchon Hanok Village, or a Han River evening cruise.</p>
+        </div>
+        <div class="photos grid-2">
+          <div class="ph" data-src="photos/gyeongbokgung.jpg">
+            <div class="img"></div>
+            <svg class="glyph" viewBox="0 0 24 24" fill="none" stroke="#2c3a7a" stroke-width="1.5"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="12" cy="12" r="3.2"/><path d="M8 5l1.2-2h5.6L16 5"/></svg>
+            <div class="label"><div class="t">Gyeongbokgung Palace</div><div class="s">Royal palace, 15 min from Myeongdong.</div><div class="k">Search: 경복궁 근정전</div></div>
+          </div>
+          <div class="ph" data-src="photos/hangang.jpg">
+            <div class="img"></div>
+            <svg class="glyph" viewBox="0 0 24 24" fill="none" stroke="#2c3a7a" stroke-width="1.5"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="12" cy="12" r="3.2"/><path d="M8 5l1.2-2h5.6L16 5"/></svg>
+            <div class="label"><div class="t">Han River at dusk</div><div class="s">Banpo Bridge fountain / river cruise.</div><div class="k">Search: 한강 반포대교 야경</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===================== FOOTER ===================== -->
+    <div class="footer">
+      <div class="logos">
+        <div class="logo-slot">Host institution logo</div>
+        <div class="logo-slot">Society / sponsor logo</div>
+        <div class="logo-slot">Seoul CVB / KTO logo</div>
+      </div>
+      <div class="credits">
+        <b>Photo credits:</b> © Korea Tourism Organization Photo Korea – photographer name (to be filled when images are inserted).<br>
+        Skyline illustration: ILCEC 2027 organizing committee. Typefaces: Manrope and Inter (SIL Open Font License).
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  // Swap illustrated / placeholder slots for real photos when the files exist.
+  document.querySelectorAll('[data-src]').forEach(function (el) {
+    var src = el.getAttribute('data-src');
+    var img = new Image();
+    img.onload = function () {
+      var target = el.classList.contains('photo') ? el : el.querySelector('.img');
+      target.style.backgroundImage = 'url("' + src + '")';
+      (el.classList.contains('photo') ? el.parentElement : el).classList.add('has-photo');
+    };
+    img.src = src;
+  });
+
+  // Nematic director-field motifs: short rods following n(θ) = s·θ around a topological defect.
+  document.querySelectorAll('svg.motif').forEach(function (svg) {
+    var s = parseFloat(svg.getAttribute('data-defect'));
+    var rings = parseInt(svg.getAttribute('data-n'), 10);
+    var ns = 'http://www.w3.org/2000/svg';
+    var colors = ['#d8432f', '#2c3a7a', '#f0a35a', '#7a86c9'];
+    for (var r = 1; r <= rings; r++) {
+      var radius = 9 + (r - 1) * 8.5;
+      var count = Math.max(6, Math.round(2 * Math.PI * radius / 9.5));
+      for (var i = 0; i < count; i++) {
+        var theta = (i / count) * 2 * Math.PI + r * 0.17;
+        var x = radius * Math.cos(theta), y = radius * Math.sin(theta);
+        var phi = s * theta;
+        var len = 5.2, w = 1.7;
+        var rect = document.createElementNS(ns, 'rect');
+        rect.setAttribute('x', -len / 2); rect.setAttribute('y', -w / 2);
+        rect.setAttribute('width', len); rect.setAttribute('height', w);
+        rect.setAttribute('rx', w / 2);
+        rect.setAttribute('fill', colors[(r + i) % colors.length]);
+        rect.setAttribute('opacity', (0.95 - r * 0.07).toFixed(2));
+        rect.setAttribute('transform', 'translate(' + x.toFixed(2) + ' ' + y.toFixed(2) + ') rotate(' + (phi * 180 / Math.PI).toFixed(1) + ')');
+        svg.appendChild(rect);
+      }
+    }
+  });
+</script>
+</body>
+</html>
