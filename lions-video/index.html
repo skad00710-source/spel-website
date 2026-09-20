@@ -70,14 +70,14 @@
   #intro, #outro { background: #ffffff; }
   #intro::before, #outro::before { content: ''; position: absolute; inset: 0; background: radial-gradient(760px 360px at 50% -120px, rgba(47,128,237,0.10), rgba(47,128,237,0) 70%); }
   .fx { opacity: 0; transform: translateY(14px); }
-  #intro .logo { position: absolute; left: 50%; top: 104px; transform: translateX(-50%); width: 340px; }
-  #intro .name { position: absolute; left: 0; right: 0; top: 368px; text-align: center; font-size: 37px; font-weight: 800; letter-spacing: -0.02em; color: var(--ink); }
+  #intro .logo { position: absolute; left: 50%; top: 88px; transform: translateX(-50%); width: 340px; }
+  #intro .name { position: absolute; left: 0; right: 0; top: 352px; text-align: center; font-size: 37px; font-weight: 800; letter-spacing: -0.02em; color: var(--ink); }
   #intro .name span { display: block; font-size: 16px; font-weight: 500; color: var(--muted); margin-top: 6px; letter-spacing: 0.04em; }
-  #intro .aff { position: absolute; left: 0; right: 0; top: 458px; text-align: center; font-size: 18px; color: var(--ink-soft); }
+  #intro .aff { position: absolute; left: 0; right: 0; top: 442px; text-align: center; font-size: 18px; color: var(--ink-soft); }
   #intro .aff b { color: var(--accent); font-weight: 700; }
-  #intro .mission { position: absolute; left: 140px; right: 140px; top: 508px; text-align: center; font-size: 20px; line-height: 1.55; color: var(--ink-soft); }
+  #intro .mission { position: absolute; left: 140px; right: 140px; top: 492px; text-align: center; font-size: 20px; line-height: 1.55; color: var(--ink-soft); }
   #intro .mission b { color: var(--ink); font-weight: 800; }
-  #intro .pills { position: absolute; left: 0; right: 0; top: 614px; display: flex; justify-content: center; gap: 34px; }
+  #intro .pills { position: absolute; left: 0; right: 0; top: 598px; display: flex; justify-content: center; gap: 34px; }
   #intro .pill { font-size: 16px; font-weight: 700; display: flex; align-items: center; gap: 9px; color: var(--ink); letter-spacing: 0.02em; }
   #intro .pill i { width: 9px; height: 9px; border-radius: 50%; display: inline-block; }
   #intro .pill small { font-weight: 500; color: var(--muted); font-size: 13px; letter-spacing: 0; }
@@ -85,7 +85,8 @@
   #intro .covers img { height: 78px; border-radius: 2px; box-shadow: 0 6px 18px rgba(20,24,40,0.14); }
   #intro .covers .t { position: absolute; right: 60px; top: 30px; font-size: 12px; color: var(--muted); text-align: right; line-height: 1.5; }
   #intro .covers .t b { color: var(--ink); }
-  #intro .kicker { position: absolute; left: 0; right: 0; top: 66px; text-align: center; font-size: 12px; letter-spacing: 0.28em; color: var(--muted); }
+  #intro .univ { position: absolute; right: 40px; bottom: 34px; display: flex; align-items: center; gap: 10px; font-size: 12px; letter-spacing: 0.22em; color: var(--muted); }
+  #intro .univ img { height: 26px; width: auto; opacity: 0.9; }
 
   #outro .logo { position: absolute; left: 50%; top: 130px; transform: translateX(-50%); width: 270px; }
   #outro .big { position: absolute; left: 0; right: 0; top: 350px; text-align: center; font-size: 36px; font-weight: 800; letter-spacing: -0.02em; color: var(--ink); }
@@ -116,7 +117,6 @@
 
   <!-- ================= INTRO ================= -->
   <section class="scene" id="intro">
-    <div class="kicker fx" data-in="0.2">HANYANG UNIVERSITY ERICA</div>
     <img class="logo fx" data-in="0.4" src="../assets/logo-dark.png" alt="SPEL" />
     <div class="name fx" data-in="1.0">Soft Photonics &amp; Electro-optics Lab<span>소프트 포토닉스 및 전기광학 연구실 (SPEL)</span></div>
     <div class="aff fx" data-in="1.5">한양대학교 ERICA 차세대반도체융합공학부 · <b>남승민</b> 교수</div>
@@ -127,6 +127,7 @@
       <div class="pill fx" data-in="3.5"><i style="background:#00c48c"></i>MOTION <small>소프트 액추에이터</small></div>
       <div class="pill fx" data-in="3.75"><i style="background:#7b2ff7"></i>INTELLIGENCE <small>시뮬레이션 · AI 설계</small></div>
     </div>
+    <div class="univ fx" data-in="1.5"><img src="../assets/hanyang-emblem.png" alt="" />HANYANG UNIVERSITY ERICA</div>
   </section>
 
   <!-- ================= SCENE 1 : CLCE principle ================= -->
