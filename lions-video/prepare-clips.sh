@@ -6,6 +6,8 @@ set -euo pipefail
 cd "$(dirname "$0")"
 FF="${FFMPEG:-ffmpeg}"
 x() { local name=$1; shift; rm -rf "clips/$name"; mkdir -p "clips/$name"; "$FF" -y -loglevel error "$@" -q:v 3 "clips/$name/f%04d.jpg"; echo "$name: $(ls clips/$name | wc -l) frames"; }
+# CLCE strip stretched by hand, red -> green cycles (portrait cover crop)      -> scene: principle
+x stretch     -ss 2.8 -t 11.3 -i clips/src/adma2023-stretch.mp4  -vf "fps=10,scale=-2:498,crop=392:498:(iw-392)/2:0"
 # 3x3 multi-pixel array, experimental part (portrait cover crop)            -> scene: multi-pixel
 x pixels-exp  -ss 3   -t 26  -i clips/src/adma2023-pixels.mp4    -vf "fps=10,scale=-2:610,crop=392:498:(iw-392)/2:0"
 # same clip, FEM analysis part (landscape)                                   -> scene: simulation
