@@ -41,7 +41,8 @@ pres.defineSlideMaster({
   background: { color: WHITE },
   objects: [
     { placeholder: { options: { name: "hero", type: "pic", x: M, y: 0.43, w: W, h: HERO_H2 } } },
-    { placeholder: { options: { name: "photo1", type: "pic", x: LX, y: 8.55, w: COL_W, h: 1.4 } } },
+    { placeholder: { options: { name: "photo1", type: "pic", x: LX, y: 8.55, w: 1.71, h: 1.4 } } },
+    { placeholder: { options: { name: "photo2", type: "pic", x: LX + 1.81, y: 8.55, w: 1.71, h: 1.4 } } },
   ],
 });
 
@@ -58,7 +59,11 @@ function H(slide, text, x, y, w) {
 function P(slide, runs, x, y, w, h, opts = {}) {
   slide.addText(runs, Object.assign({ x, y, w, h, fontFace: FONT, fontSize: 7.6, color: INK, margin: 0, isTextBox: true, valign: "top", paraSpaceAfter: 2 }, opts));
 }
-function photoSlot(slide, x, y, w, h, title, sub, key) {
+function photoSlot(slide, x, y, w, h, title, sub, key, img, ph) {
+  if (img) {
+    slide.addImage({ placeholder: ph, path: path.join(HERE, "photos", img), x, y, w, h });
+    return;
+  }
   slide.addShape(pres.shapes.ROUNDED_RECTANGLE, { x, y, w, h, rectRadius: 0.06, fill: { color: SLOT }, line: { color: LINE, width: 0.5, dashType: "dash" } });
   slide.addText([
     { text: title, options: { bold: true, color: NAVY, fontSize: 7.6, breakLine: true } },
@@ -68,9 +73,9 @@ function photoSlot(slide, x, y, w, h, title, sub, key) {
   slide.addText("Click the picture icon to insert a photo", { x: x + 0.08, y: y + 0.05, w: w - 0.16, h: 0.18, fontFace: FONT, fontSize: 6, italic: true, color: MUTED, margin: 0, isTextBox: true, valign: "top" });
 }
 
-function header(slide, heroH) {
+function header(slide, heroH, heroImg) {
   const bottom = 0.43 + heroH;
-  slide.addImage({ placeholder: "hero", path: path.join(HERE, "hero.png"), x: M, y: 0.43, w: W, h: heroH });
+  slide.addImage({ placeholder: "hero", path: path.join(HERE, "photos", heroImg), x: M, y: 0.43, w: W, h: heroH });
   slide.addText("SEOUL  ·  KOREA  ·  2027", {
     x: M + 0.18, y: bottom - 0.33, w: 2.1, h: 0.25, fontFace: FONT, fontSize: 8, bold: true, color: WHITE, charSpacing: 3,
     margin: [0, 6, 0, 6], isTextBox: true, valign: "middle", fill: { color: NAVY, transparency: 45 }, line: { color: WHITE, width: 0.5, transparency: 45 },
@@ -114,9 +119,9 @@ function footer(slide) {
     slide.addText(t, { x, y: 10.24, w: 1.02, h: 0.38, fontFace: FONT, fontSize: 6.2, color: MUTED, align: "center", valign: "middle", margin: 0, isTextBox: true });
   });
   slide.addText([
-    { text: "Photo credits: ", options: { bold: true, color: NAVY2 } },
-    { text: "© Korea Tourism Organization Photo Korea – photographer name (fill in when images are inserted).", options: { breakLine: true } },
-    { text: "Skyline illustration: ILCEC 2027 organizing committee." },
+    { text: "Photos: ", options: { bold: true, color: NAVY2 } },
+    { text: "© Korea Tourism Organization (Photo Korea) – 조한섭, 한국관광공사 카멜프레스, 안형록, 임귀빈, 임태원, 이재국, IR 스튜디오. KOGL Type 1.", options: { breakLine: true } },
+    { text: "Typefaces: Arial. Replace the low-resolution preview photos with the original downloads before printing." },
   ], { x: 4.3, y: 10.2, w: 3.5, h: 0.46, fontFace: FONT, fontSize: 6.1, color: MUTED, align: "right", valign: "middle", margin: 0, isTextBox: true });
 }
 
@@ -159,7 +164,7 @@ function venueBlocks(slide, y) {
 // ================= PAGE 1 – FRONT =================
 {
   const s = pres.addSlide({ masterName: "FRONT" });
-  let y = header(s, HERO_H1);
+  let y = header(s, HERO_H1, "hero-front.jpg");
   y = intro(s, y + 0.17, 8.6, 1.1);
   y += 0.18;
   const top = y;
@@ -174,26 +179,25 @@ function venueBlocks(slide, y) {
       P(s, [tbd("TBD")], LX, yy, 0.7, 0.16);
       P(s, [T(t)], LX + 0.75, yy, COL_W - 0.75, 0.16);
     });
-  photoSlot(s, LX, 7.62, COL_W, 1.28, "Myeongdong at night", "Street-level view of the Myeongdong shopping district, a short walk from the venue.", "Photo Korea search: 명동 야경");
-  photoSlot(s, LX, 8.98, COL_W, 0.96, "Namsan & N Seoul Tower", "City view from Namsan, 20 min on foot or by cable car from Myeongdong.", "Search: 남산 서울타워 야경");
+  photoSlot(s, LX, 7.62, COL_W, 1.28, "Myeongdong at night", "Street-level view of the Myeongdong shopping district, a short walk from the venue.", "Photo Korea search: 명동 야경", "p-myeongdong.jpg", "photo1");
+  photoSlot(s, LX, 8.98, COL_W, 0.96, "Seoullo 7017 & Seoul Station", "Elevated garden walkway at Seoul Station, the AREX airport-train terminus.", "Search: 서울로 7017 야경", "p-seoullo.jpg", "photo2");
 
   // right column
   venueBlocks(s, top);
-  photoSlot(s, RX, 9.18, 1.71, 0.76, "Gyeongbokgung Palace", "Royal palace, 15 min from Myeongdong.", "Search: 경복궁 근정전");
-  photoSlot(s, RX + 1.81, 9.18, 1.71, 0.76, "Han River at dusk", "Banpo Bridge fountain / river cruise.", "Search: 한강 반포대교 야경");
+  photoSlot(s, RX, 9.18, 1.71, 0.76, "Gyeongbokgung Palace", "Royal palace, 15 min from Myeongdong.", "Search: 경복궁 근정전", "p-gyeongbokgung.jpg", "photo3");
+  photoSlot(s, RX + 1.81, 9.18, 1.71, 0.76, "Han River at dusk", "Banpo Bridge fountain / river cruise.", "Search: 한강 반포대교 야경", "p-hangang.jpg", "photo4");
 
   footer(s);
   s.addNotes(
     "ILCEC 2027 First Announcement – FRONT page (draft).\n" +
-    "Replace every red [bracketed] item. Click the empty picture icons to insert photos (Photo Korea, phoko.visitkorea.or.kr, KOGL type 1, credit required). " +
-    "Right-click the top illustration → Change Picture to swap in a Seoul panorama. Delete the red DRAFT tag before release."
+    "Replace every red [bracketed] item. Photos are Photo Korea preview files (low resolution, watermarked): right-click each photo → Change Picture and pick the original download before printing. Credits are in the footer. Delete the red DRAFT tag before release."
   );
 }
 
 // ================= PAGE 2 – BACK =================
 {
   const s = pres.addSlide({ masterName: "BACK" });
-  let y = header(s, HERO_H2);
+  let y = header(s, HERO_H2, "hero-back.jpg");
   y = intro(s, y + 0.13, 9.3, 1.16);
   y += 0.13;
   const top = y;
@@ -211,20 +215,21 @@ function venueBlocks(slide, y) {
   y = contact(s, y);
   H(s, "Webpage", LX, y, COL_W);
   P(s, [{ text: "[https://ilcec2027.___]", options: { bold: true, color: ACCENT, underline: true } }], LX, y + 0.22, COL_W, 0.2);
-  photoSlot(s, LX, 8.55, COL_W, 1.4, "Bukchon Hanok Village", "Traditional hanok quarter between Gyeongbokgung and Changdeokgung palaces.", "Search: 북촌한옥마을");
+  photoSlot(s, LX, 8.55, 1.71, 1.4, "Bukchon Hanok Village", "Traditional hanok quarter between Gyeongbokgung and Changdeokgung palaces.", "Search: 북촌한옥마을", "p-bukchon.jpg", "photo1");
+  photoSlot(s, LX + 1.81, 8.55, 1.71, 1.4, "Gyeonghoeru Pavilion", "Royal banquet pavilion, Gyeongbokgung Palace.", "Search: 경회루", "p-gyeonghoeru.jpg", "photo2");
 
   // right column
   y = venueBlocks(s, top);
   H(s, "Topics", RX, y, COL_W);
   P(s, [
-    nl("· Synthesis, alignment and processing of LCEs and LC networks"),
-    nl("· Photo-, thermo-, electro- and magneto-actuation; soft robotics"),
+    nl("· Synthesis, alignment and processing of LCEs"),
+    nl("· Photo-, thermo-, electro- and magneto-actuation"),
     nl("· Soft mechanics, instabilities, defects and topology"),
     nl("· 4D printing and microfabrication"),
-    nl("· Feedback-driven, autonomous and self-oscillating motion"),
+    nl("· Feedback-driven and autonomous motion; soft robotics"),
     nl("· Tunable photonics, stretchable and wearable devices"),
     T("· Theory, modelling and data-driven design"),
-  ], RX, y + 0.22, COL_W, 0.96, { paraSpaceAfter: 1 });
+  ], RX, y + 0.22, COL_W, 1.0, { paraSpaceAfter: 1 });
 
   footer(s);
   s.addNotes("ILCEC 2027 First Announcement – BACK page (draft). Committee lists, webpage, venue details and topics. Same editing rules as the front page.");
