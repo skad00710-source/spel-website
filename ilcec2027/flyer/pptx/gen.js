@@ -9,7 +9,8 @@ const HERE = __dirname;
 // ---- palette ----
 const NAVY = "1B2450", NAVY2 = "2C3A7A", INK = "262B3D", MUTED = "5B6079";
 const ACCENT = "D8432F", LINE = "CFD4EA", SLOT = "E3E6F4", WHITE = "FFFFFF";
-const FONT = "Arial";
+const FONT = "Inter";      // body text (matches the PDF); install fonts/ if PowerPoint substitutes
+const FONT_H = "Manrope";  // headings, title, badges
 
 const pres = new pptxgen();
 pres.defineLayout({ name: "A4P", width: 8.27, height: 11.69 });
@@ -48,14 +49,14 @@ pres.defineSlideMaster({
 
 // ---- helpers ----
 const TBD_BG = "FFF1EE";
-const tbd = (label) => ({ text: ` ${label} `, options: { color: "B8402F", bold: true, highlight: TBD_BG } });
+const tbd = (label) => ({ text: ` ${label} `, options: { fontFace: FONT_H, fontSize: 7, color: "B8402F", bold: true, highlight: TBD_BG } });
 const B = (t) => ({ text: t, options: { bold: true, color: NAVY } });
 const T = (t) => ({ text: t });
 const BR = { text: "", options: { breakLine: true } };
 const nl = (t) => ({ text: t, options: { breakLine: true } });
 
 function H(slide, text, x, y, w) {
-  slide.addText(text, { x, y, w, h: 0.22, fontFace: FONT, fontSize: 8.6, bold: true, color: ACCENT, margin: 0, isTextBox: true, valign: "top" });
+  slide.addText(text, { x, y, w, h: 0.22, fontFace: FONT_H, fontSize: 8.6, bold: true, color: ACCENT, margin: 0, isTextBox: true, valign: "top" });
 }
 function P(slide, runs, x, y, w, h, opts = {}) {
   slide.addText(runs, Object.assign({ x, y, w, h, fontFace: FONT, fontSize: 7.6, color: INK, margin: 0, isTextBox: true, valign: "top", paraSpaceAfter: 2 }, opts));
@@ -78,7 +79,7 @@ function header(slide, heroH, heroImg) {
   const bottom = 0.43 + heroH;
   slide.addImage({ placeholder: "hero", path: path.join(HERE, "photos", heroImg), x: M, y: 0.43, w: W, h: heroH });
   slide.addText("SEOUL  ·  KOREA  ·  2027", {
-    x: M + 0.18, y: bottom - 0.33, w: 2.1, h: 0.25, fontFace: FONT, fontSize: 8, bold: true, color: WHITE, charSpacing: 3,
+    x: M + 0.18, y: bottom - 0.33, w: 2.1, h: 0.25, fontFace: FONT_H, fontSize: 8, bold: true, color: WHITE, charSpacing: 3,
     margin: [0, 6, 0, 6], isTextBox: true, valign: "middle", fill: { color: NAVY, transparency: 45 }, line: { color: WHITE, width: 0.5, transparency: 45 },
   });
   slide.addImage({ path: path.join(HERE, "motif.png"), x: 6.55, y: 0.02, w: 1.55, h: 1.55 });
@@ -86,18 +87,18 @@ function header(slide, heroH, heroImg) {
 
   const ty = bottom + 0.17;
   slide.addText("International Liquid Crystal\nElastomer Conference", {
-    x: M, y: ty, w: 4.75, h: 0.95, fontFace: FONT, fontSize: 26, bold: true, color: NAVY, margin: 0, isTextBox: true, valign: "bottom", lineSpacingMultiple: 0.95,
+    x: M, y: ty, w: 5.1, h: 0.95, fontFace: FONT_H, fontSize: 25, bold: true, color: NAVY, charSpacing: -0.4, margin: 0, isTextBox: true, valign: "bottom", lineSpacingMultiple: 0.95,
   });
   slide.addText([
     { text: "ILCEC 2027", options: { fontSize: 15, bold: true, color: ACCENT, breakLine: true } },
     { text: "on ", options: { fontSize: 10.5, bold: true, color: NAVY2 } },
-    { text: " DD–DD Month 2027 ", options: { fontSize: 10.5, bold: true, color: "B8402F", highlight: TBD_BG, breakLine: true } },
+    { text: " DD–DD Month 2027 ", options: { fontFace: FONT_H, fontSize: 10.5, bold: true, color: "B8402F", highlight: TBD_BG, breakLine: true } },
     { text: "in Seoul, Republic of Korea", options: { fontSize: 10.5, bold: true, color: NAVY2 } },
-  ], { x: 5.62, y: ty, w: 2.25, h: 0.95, fontFace: FONT, margin: 0, isTextBox: true, valign: "bottom", lineSpacingMultiple: 1.1 });
+  ], { x: 5.62, y: ty, w: 2.25, h: 0.95, fontFace: FONT_H, margin: 0, isTextBox: true, valign: "bottom", lineSpacingMultiple: 1.1 });
 
   // DRAFT ribbon (delete for the final version)
   slide.addText("DRAFT · TBD", {
-    x: 6.62, y: 0.46, w: 2.2, h: 0.26, rotate: 45, fontFace: FONT, fontSize: 7.5, bold: true, color: WHITE, charSpacing: 3, align: "center", valign: "middle",
+    x: 6.62, y: 0.46, w: 2.2, h: 0.26, rotate: 45, fontFace: FONT_H, fontSize: 7.5, bold: true, color: WHITE, charSpacing: 3, align: "center", valign: "middle",
     fill: { color: ACCENT }, margin: 0, isTextBox: true, shadow: { type: "outer", color: "000000", blur: 3, offset: 1, angle: 90, opacity: 0.25 },
   });
   return ty + 0.95;
@@ -122,7 +123,7 @@ function footer(slide) {
   slide.addText([
     { text: "Photos: ", options: { bold: true, color: NAVY2 } },
     { text: "© Korea Tourism Organization (Photo Korea) – 조한섭, 한국관광공사 카멜프레스, 안형록, 임귀빈, 임태원, 이재국, IR 스튜디오. KOGL Type 1.", options: { breakLine: true } },
-    { text: "Typefaces: Arial. Replace the low-resolution preview photos with the original downloads before printing." },
+    { text: "Typefaces: Manrope and Inter (SIL Open Font License)." },
   ], { x: 4.3, y: 10.2, w: 3.5, h: 0.46, fontFace: FONT, fontSize: 6.1, color: MUTED, align: "right", valign: "middle", margin: 0, isTextBox: true });
 }
 
@@ -134,7 +135,7 @@ function chairs(slide, y) {
 }
 function contact(slide, y) {
   H(slide, "Contact", LX, y, COL_W);
-  P(slide, [tbd("Coordinator name"), T(", conference coordinator"), BR, { text: " ilcec2027@___.ac.kr ", options: { bold: true, color: "B8402F", highlight: TBD_BG } }], LX, y + 0.22, COL_W, 0.34);
+  P(slide, [tbd("Coordinator name"), T(", conference coordinator"), BR, { text: " ilcec2027@___.ac.kr ", options: { fontFace: FONT_H, fontSize: 7, bold: true, color: "B8402F", highlight: TBD_BG } }], LX, y + 0.22, COL_W, 0.34);
   return y + 0.62;
 }
 function venueBlocks(slide, y) {
@@ -148,7 +149,7 @@ function venueBlocks(slide, y) {
   P(slide, [T("A block of rooms at a conference rate will be pre-reserved at the Royal Hotel Seoul. Myeongdong offers a very wide range of hotels and guesthouses at every price level within walking distance of the venue; details will follow in the 2nd announcement.")], RX, y + 0.22, COL_W, 0.55);
   y += 0.78;
   slide.addText([
-    { text: "Social program ", options: { bold: true, color: ACCENT, fontSize: 8.6 } },
+    { text: "Social program ", options: { fontFace: FONT_H, bold: true, color: ACCENT, fontSize: 8.6 } },
     { text: "(tentative)", options: { bold: true, color: MUTED, fontSize: 7 } },
   ], { x: RX, y, w: COL_W, h: 0.22, fontFace: FONT, margin: 0, isTextBox: true, valign: "top" });
   P(slide, [
@@ -174,7 +175,7 @@ function venueBlocks(slide, y) {
   y = chairs(s, top);
   y = contact(s, y);
   H(s, "Important dates", LX, y, COL_W);
-  ["2nd announcement with keynote speakers and key dates", "Abstract submission opens", "Abstract submission deadline", "Early-bird registration deadline"]
+  ["2nd announcement: speakers and key dates", "Abstract submission opens", "Abstract submission deadline", "Early-bird registration deadline"]
     .forEach((t, i) => {
       const yy = y + 0.22 + i * 0.16;
       P(s, [tbd("TBD")], LX, yy, 0.7, 0.16);
@@ -215,7 +216,7 @@ function venueBlocks(slide, y) {
   y += 1.22;
   y = contact(s, y);
   H(s, "Webpage", LX, y, COL_W);
-  P(s, [{ text: " https://ilcec2027.___ ", options: { bold: true, color: "B8402F", highlight: TBD_BG } }], LX, y + 0.22, COL_W, 0.2);
+  P(s, [{ text: " https://ilcec2027.___ ", options: { fontFace: FONT_H, fontSize: 7, bold: true, color: "B8402F", highlight: TBD_BG } }], LX, y + 0.22, COL_W, 0.2);
   photoSlot(s, LX, 8.55, 1.71, 1.4, "Bukchon Hanok Village", "Traditional hanok quarter between Gyeongbokgung and Changdeokgung palaces.", "Search: 북촌한옥마을", "p-bukchon.jpg", "photo1");
   photoSlot(s, LX + 1.81, 8.55, 1.71, 1.4, "Gyeonghoeru Pavilion", "Royal banquet pavilion, Gyeongbokgung Palace.", "Search: 경회루", "p-gyeonghoeru.jpg", "photo2");
 
@@ -230,7 +231,7 @@ function venueBlocks(slide, y) {
     nl("· Feedback-driven and autonomous motion; soft robotics"),
     nl("· Tunable photonics, stretchable and wearable devices"),
     T("· Theory, modelling and data-driven design"),
-  ], RX, y + 0.22, COL_W, 1.0, { paraSpaceAfter: 1 });
+  ], RX, y + 0.22, COL_W, 1.04, { paraSpaceAfter: 1 });
 
   footer(s);
   s.addNotes("ILCEC 2027 First Announcement – BACK page (draft). Committee lists, webpage, venue details and topics. Same editing rules as the front page.");
