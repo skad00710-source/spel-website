@@ -27,7 +27,7 @@ const HERO_H1 = 1.9, HERO_H2 = 1.58;
 // Picture placeholders live on the layout so the user can click-to-insert / right-click → Change Picture.
 pres.defineSlideMaster({
   title: "FRONT",
-  background: { color: WHITE },
+  background: { path: path.join(HERE, "wash.jpg") },
   objects: [
     { placeholder: { options: { name: "hero", type: "pic", x: M, y: 0.43, w: W, h: HERO_H1 } } },
     { placeholder: { options: { name: "photo1", type: "pic", x: LX, y: 7.62, w: COL_W, h: 1.28 } } },
@@ -38,7 +38,7 @@ pres.defineSlideMaster({
 });
 pres.defineSlideMaster({
   title: "BACK",
-  background: { color: WHITE },
+  background: { path: path.join(HERE, "wash.jpg") },
   objects: [
     { placeholder: { options: { name: "hero", type: "pic", x: M, y: 0.43, w: W, h: HERO_H2 } } },
     { placeholder: { options: { name: "photo1", type: "pic", x: LX, y: 8.55, w: 1.71, h: 1.4 } } },
@@ -47,7 +47,8 @@ pres.defineSlideMaster({
 });
 
 // ---- helpers ----
-const tbd = (label) => ({ text: `[${label}]`, options: { color: ACCENT, bold: true } });
+const TBD_BG = "FFF1EE";
+const tbd = (label) => ({ text: ` ${label} `, options: { color: "B8402F", bold: true, highlight: TBD_BG } });
 const B = (t) => ({ text: t, options: { bold: true, color: NAVY } });
 const T = (t) => ({ text: t });
 const BR = { text: "", options: { breakLine: true } };
@@ -85,19 +86,19 @@ function header(slide, heroH, heroImg) {
 
   const ty = bottom + 0.17;
   slide.addText("International Liquid Crystal\nElastomer Conference", {
-    x: M, y: ty, w: 4.75, h: 0.95, fontFace: FONT, fontSize: 25, bold: true, color: NAVY, margin: 0, isTextBox: true, valign: "bottom", lineSpacingMultiple: 0.95,
+    x: M, y: ty, w: 4.75, h: 0.95, fontFace: FONT, fontSize: 26, bold: true, color: NAVY, margin: 0, isTextBox: true, valign: "bottom", lineSpacingMultiple: 0.95,
   });
   slide.addText([
     { text: "ILCEC 2027", options: { fontSize: 15, bold: true, color: ACCENT, breakLine: true } },
     { text: "on ", options: { fontSize: 10.5, bold: true, color: NAVY2 } },
-    { text: "[DD–DD Month 2027]", options: { fontSize: 10.5, bold: true, color: ACCENT, breakLine: true } },
+    { text: " DD–DD Month 2027 ", options: { fontSize: 10.5, bold: true, color: "B8402F", highlight: TBD_BG, breakLine: true } },
     { text: "in Seoul, Republic of Korea", options: { fontSize: 10.5, bold: true, color: NAVY2 } },
   ], { x: 5.62, y: ty, w: 2.25, h: 0.95, fontFace: FONT, margin: 0, isTextBox: true, valign: "bottom", lineSpacingMultiple: 1.1 });
 
-  // DRAFT tag (delete for the final version)
+  // DRAFT ribbon (delete for the final version)
   slide.addText("DRAFT · TBD", {
-    x: 6.75, y: 0.05, w: 1.15, h: 0.24, fontFace: FONT, fontSize: 7.5, bold: true, color: WHITE, charSpacing: 2, align: "center", valign: "middle",
-    fill: { color: ACCENT }, margin: 0, isTextBox: true,
+    x: 6.62, y: 0.46, w: 2.2, h: 0.26, rotate: 45, fontFace: FONT, fontSize: 7.5, bold: true, color: WHITE, charSpacing: 3, align: "center", valign: "middle",
+    fill: { color: ACCENT }, margin: 0, isTextBox: true, shadow: { type: "outer", color: "000000", blur: 3, offset: 1, angle: 90, opacity: 0.25 },
   });
   return ty + 0.95;
 }
@@ -133,7 +134,7 @@ function chairs(slide, y) {
 }
 function contact(slide, y) {
   H(slide, "Contact", LX, y, COL_W);
-  P(slide, [tbd("Coordinator name"), T(", conference coordinator"), BR, { text: "[ilcec2027@___.ac.kr]", options: { bold: true, color: ACCENT } }], LX, y + 0.22, COL_W, 0.34);
+  P(slide, [tbd("Coordinator name"), T(", conference coordinator"), BR, { text: " ilcec2027@___.ac.kr ", options: { bold: true, color: "B8402F", highlight: TBD_BG } }], LX, y + 0.22, COL_W, 0.34);
   return y + 0.62;
 }
 function venueBlocks(slide, y) {
@@ -214,7 +215,7 @@ function venueBlocks(slide, y) {
   y += 1.22;
   y = contact(s, y);
   H(s, "Webpage", LX, y, COL_W);
-  P(s, [{ text: "[https://ilcec2027.___]", options: { bold: true, color: ACCENT, underline: true } }], LX, y + 0.22, COL_W, 0.2);
+  P(s, [{ text: " https://ilcec2027.___ ", options: { bold: true, color: "B8402F", highlight: TBD_BG } }], LX, y + 0.22, COL_W, 0.2);
   photoSlot(s, LX, 8.55, 1.71, 1.4, "Bukchon Hanok Village", "Traditional hanok quarter between Gyeongbokgung and Changdeokgung palaces.", "Search: 북촌한옥마을", "p-bukchon.jpg", "photo1");
   photoSlot(s, LX + 1.81, 8.55, 1.71, 1.4, "Gyeonghoeru Pavilion", "Royal banquet pavilion, Gyeongbokgung Palace.", "Search: 경회루", "p-gyeonghoeru.jpg", "photo2");
 
