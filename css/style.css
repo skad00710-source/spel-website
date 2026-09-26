@@ -6,7 +6,7 @@
 :root {
   --ink: #191d26;
   --ink-soft: #454c5e;
-  --muted: #7a8194;
+  --muted: #60677a; /* ≥ 4.5:1 on --bg and --bg-soft (WCAG AA body text) */
   --bg: #ffffff;
   --bg-soft: #f6f7fa;
   --line: #e7e9f0;
