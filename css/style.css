@@ -11,7 +11,7 @@
   --bg-soft: #f6f7fa;
   --line: #e7e9f0;
   --navy: #101527;
-  --accent: #3452e0;
+  --accent: #1f3a68; /* deep navy; same family as --navy, 11.3:1 on white */
   --spectrum: linear-gradient(90deg, #7b2ff7, #2f80ed, #00c48c, #f5a623, #f0304a);
   --radius: 16px;
   --shadow: 0 8px 32px rgba(20, 24, 40, 0.08);
