@@ -1,6 +1,6 @@
 # LIONS 칼리지 설명회 · SPEL 연구 소개 영상
 
-1학년 대상 설명회용 무음 영상(1280×720, 24 fps, 약 84초). 노동규 교수님 자료와 같은
+1학년 대상 설명회용 무음 영상(기본 1920×1080, 30 fps, 약 84초). 노동규 교수님 자료와 같은
 포맷을 따릅니다: 상단 제목, **실제 영상 × 시뮬레이션** 병렬 패널, 우측 실시간 판독 카드,
 하단 한 줄 메시지, 재생 진행 바. 색·폰트는 연구실 홈페이지(`css/style.css`)의 라이트 테마
 토큰(ink #191d26, accent #3452e0, 스펙트럼 그라데이션, Pretendard)을 그대로 씁니다.
@@ -10,12 +10,12 @@
 | 시간 | 장면 | 실제 영상 | 시뮬레이션 / 시각화 |
 |---|---|---|---|
 | 0:00–0:06 | 연구실 소개 (로고 · LIGHT/ENERGY/MOTION/INTELLIGENCE) | – | – |
-| 0:06–0:18 | CLCE 원리: 당기면 색이 변하는 고무 | Adv. Mater. 2023 보충 영상 1 (손 인장) | 나선 피치 ↓ → λ = n·P ↓, 반사 스펙트럼 |
-| 0:18–0:32 | 다중 픽셀 광소자 | Adv. Mater. 2023 보충 영상 3 (실험) | 픽셀별 설계 계수 → 국소 변형률 → 색 |
-| 0:32–0:46 | 광 암호화 / 광학 위장 | Adv. Mater. 2023 보충 영상 10 (카멜레온) | 두께 제어 단면도, 적외선 → 가시광 진입 |
-| 0:46–1:02 | 수치해석 · 시뮬레이션 · AI 설계 | 보충 영상 3 (FEM), 색→변형률 복원 검증 영상 | FDTD / FEA / ML 도구 카드 |
-| 1:02–1:18 | CLCE 바이오 센서 | CLCE_tracking (MATLAB CIE 색 추적), ACS AMI 2023 보충 영상 S3 (손가락 섬유 센서, 색+저항) | 변형률 시간 기록 (클립 굽힘 주기에 동기화) |
-| 1:18–1:23 | 마무리 (Join us · spel.hanyang.ac.kr) | – | – |
+| 0:06–0:20 | CLCE 원리: 당기면 색이 변하는 고무 | Adv. Mater. 2023 보충 영상 1 (손 인장) | 나선 피치 ↓ → λ = n·P ↓. 판독값은 영상의 실제 색을 프레임마다 측정해 구동 |
+| 0:20–0:34 | 다중 픽셀 광소자 (세 가지 색) | Adv. Mater. 2023 보충 영상 3 (실험) | 영상·FEM과 같은 라틴 방진 배열, 양축(면적) 변형 λ = λ0/(1+ε) |
+| 0:34–0:48 | 광 암호화 / 광학 위장 | Adv. Mater. 2023 보충 영상 10 (카멜레온) | 같은 적외선 시작 파장 + 부위별 탄성률 차이 → 부위별 변형 |
+| 0:48–1:02 | 시뮬레이션 · AI 설계 | 보충 영상 3 (FEM, 자막 제거 크롭), 색→변형률 판독 검증(재구성 패널) | FDTD / FEA / ML 도구 |
+| 1:02–1:18 | CLCE 바이오 센서 | CLCE 색 추적(학부연구생), Zhao et al. ACS AMI 2023 섬유 센서(외부) | 손가락 굽힘 주기에 맞춘 변형률 기록 (CLCE 모델) |
+| 1:18–1:23 | 마무리 (spel.hanyang.ac.kr) — 페이드아웃 없이 마지막 프레임 유지 | – | – |
 
 ## 파일
 
@@ -23,15 +23,17 @@
   타임라인은 상단 `SCENES`, 클립 재생 설정은 `CLIPS`에서 수정.
 - `prepare-clips.sh` – `clips/src/*.mp4`를 크롭·리사이즈해 JPEG 프레임 시퀀스(`clips/<name>/f0001.jpg…`)로 추출.
   브라우저 코덱에 의존하지 않고 프레임을 정확히 동기화하기 위한 방식.
-- `render.mjs` – Playwright(Chromium)로 프레임을 캡처하고 ffmpeg로 MP4 인코딩.
+- `render.mjs` – Playwright(Chromium)로 프레임을 무손실 PNG로 캡처하고 ffmpeg(libx264, BT.709 변환·태깅, crf 14)로 MP4 인코딩.
+  `--scale` 1.5 = 1920×1080(기본), 2 = 2560×1440, 3 = 3840×2160. `--fps`(기본 30), `--crf`(기본 14).
 - `clips/src/` – 원본 클립. `wearable-joint.mp4`는 외부 논문 보충 영상(ACS Appl. Mater. Interfaces 15, 16063 (2023), SI Video S3)이므로 화면 하단에 출처를 표기함.
 
 ## 다시 렌더링하기
 
 ```bash
 cd lions-video
-./prepare-clips.sh                     # 클립을 바꾸거나 크롭을 수정했을 때만
-NODE_PATH=$(npm root -g) node render.mjs            # → out/spel-lions.mp4
+./prepare-clips.sh                                   # 클립을 바꾸거나 크롭을 수정했을 때만 (K=2: 패널 크기의 2배로 추출)
+NODE_PATH=$(npm root -g) node render.mjs              # → out/spel-lions-1080p.mp4
+NODE_PATH=$(npm root -g) node render.mjs --scale 3    # 4K (먼저 K=3 ./prepare-clips.sh 권장)
 NODE_PATH=$(npm root -g) node render.mjs --stills 5,30   # 특정 시점 정지 화면만
 ```
 
@@ -42,8 +44,14 @@ NODE_PATH=$(npm root -g) node render.mjs --stills 5,30   # 특정 시점 정지 
 
 ## 클립 교체 방법
 
-1. 새 mp4를 `clips/src/`에 넣고 `prepare-clips.sh`에 한 줄 추가(크롭/스케일은 패널 크기에 맞춤:
-   세로 패널 392×498, 가로 패널 600×400 등).
+1. 새 mp4를 `clips/src/`에 넣고 `prepare-clips.sh`에 한 줄 추가(크롭/스케일은 패널 CSS 크기에 맞추고
+   `$(m 392)`처럼 K배로 지정: 세로 패널 392×498, 가로 패널 600×400 등).
 2. `index.html`의 `CLIPS`에 `{ dir, fps, count, speed, loop }`를 등록하고,
    해당 장면의 `<img class="clip" id="…">` 크기를 맞춤.
 3. 장면 애니메이션(변형률 곡선 `strain2`, `strain3` 등)은 클립의 인장·이완 타이밍에 맞춰 조정.
+   `S1_STRAIN`은 첫 장면 클립의 프레임별 색(초록/빨강 비)을 측정해 만든 값이므로 클립을 바꾸면 다시 측정.
+
+## PowerPoint에 넣을 때
+
+영상 첫 프레임은 흰 화면에서 페이드인하므로 `재생 → 포스터 프레임`을 약 4초 지점으로 지정하면 슬라이드에서
+로고가 보입니다(또는 `node render.mjs --stills 4`로 만든 PNG를 포스터 이미지로 지정).

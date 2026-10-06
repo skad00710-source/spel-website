@@ -16,10 +16,12 @@ const here = dirname(fileURLToPath(import.meta.url));
 
 const args = process.argv.slice(2);
 const opt = (k, d) => { const i = args.indexOf(k); return i >= 0 ? args[i + 1] : d; };
-const FPS = parseInt(opt('--fps', '24'), 10);
+const FPS = parseInt(opt('--fps', '30'), 10);
 const OUT = resolve(opt('--out', join(here, 'out')));
 const STILLS = opt('--stills', null);
-const SCALE = parseFloat(opt('--scale', '1'));   // deviceScaleFactor: 1 → 1280×720, 1.5 → 1920×1080, 3 → 3840×2160
+const SCALE = parseFloat(opt('--scale', '1.5')); // deviceScaleFactor: 1 → 1280×720, 1.5 → 1920×1080 (default), 2 → 2560×1440, 3 → 3840×2160
+const CRF = opt('--crf', '14');                   // x264 quality: lower = better; 14 is visually lossless for this content
+const NAME = opt('--name', `spel-lions-${Math.round(720 * SCALE)}p.mp4`);
 const FFMPEG = process.env.FFMPEG || 'ffmpeg';
 mkdirSync(OUT, { recursive: true });
 
@@ -59,14 +61,19 @@ const n = Math.ceil(TOTAL * FPS);
 const t0 = Date.now();
 for (let i = 0; i < n; i++) {
   await page.evaluate((t) => window.seek(t), i / FPS);
-  const buf = await page.screenshot({ type: 'jpeg', quality: 95 });
-  writeFileSync(join(frames, `f${String(i).padStart(5, '0')}.jpg`), buf);
+  const buf = await page.screenshot({ type: 'png' });   // lossless capture; the only lossy step is the final encode
+  writeFileSync(join(frames, `f${String(i).padStart(5, '0')}.png`), buf);
   if (i % 120 === 0) console.log(`frame ${i}/${n}  (${((Date.now() - t0) / 1000).toFixed(0)}s)`);
 }
 await browser.close();
 
-const mp4 = join(OUT, 'spel-lions.mp4');
-const r = spawnSync(FFMPEG, ['-y', '-loglevel', 'error', '-framerate', String(FPS), '-i', join(frames, 'f%05d.jpg'),
-  '-c:v', 'libx264', '-preset', 'slow', '-crf', '18', '-pix_fmt', 'yuv420p', '-movflags', '+faststart', mp4], { stdio: 'inherit' });
+const mp4 = join(OUT, NAME);
+// RGB PNG -> YUV with the BT.709 matrix (HD standard) and tagged as such, so players/projectors don't shift colours.
+const r = spawnSync(FFMPEG, ['-y', '-loglevel', 'error', '-framerate', String(FPS), '-i', join(frames, 'f%05d.png'),
+  '-vf', 'scale=out_color_matrix=bt709:out_range=tv:flags=lanczos+accurate_rnd+full_chroma_int,format=yuv420p',
+  '-c:v', 'libx264', '-preset', 'slow', '-crf', CRF, '-profile:v', 'high',
+  '-x264-params', 'keyint=' + FPS * 2 + ':min-keyint=' + FPS,
+  '-colorspace', 'bt709', '-color_primaries', 'bt709', '-color_trc', 'bt709', '-color_range', 'tv',
+  '-movflags', '+faststart', mp4], { stdio: 'inherit' });
 if (r.status !== 0) { console.error('ffmpeg failed'); process.exit(1); }
 console.log('wrote', mp4, `(${readdirSync(frames).length} frames)`);
