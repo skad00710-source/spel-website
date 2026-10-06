@@ -1,8 +1,8 @@
-// Renders index.html to an MP4 (1280x720) by driving window.seek(t) frame by frame.
+// Renders index.html to an MP4 (default 1920x1080 @ 30 fps; --scale 1 = 1280x720) by driving window.seek(t) frame by frame.
 // Usage:
-//   node render.mjs                     -> full video  -> out/spel-lions.mp4
+//   node render.mjs                     -> full video  -> out/spel-lions-1080p.mp4
 //   node render.mjs --stills 2,10,30    -> PNG stills at those seconds -> out/still-XX.png
-//   node render.mjs --fps 24 --out /path/to/dir
+//   node render.mjs --scale 1.5 --fps 30 --out /path/to/dir   (--scale 3 = 4K; re-run prepare-clips.sh with K=3 first)
 // Requires: playwright (global install is fine: NODE_PATH=$(npm root -g)), ffmpeg on PATH or FFMPEG env var.
 import { createRequire } from 'node:module';
 import { existsSync, mkdirSync, readFileSync, writeFileSync, rmSync, readdirSync } from 'node:fs';
@@ -32,7 +32,8 @@ if (existsSync(nskr)) fontCss += readFileSync(nskr, 'utf8').replace(/url\((nskr-
 const pret = join(here, 'fonts', 'pretendard', 'pretendard.css');
 if (existsSync(pret)) fontCss += readFileSync(pret, 'utf8').replace(/url\(["']?(\.\/)?(woff2-dynamic-subset\/[^"')]+)["']?\)/g, (m, d, f) => `url(file://${join(here, 'fonts', 'pretendard', f)})`);
 
-const browser = await chromium.launch();
+// no font hinting: hinted glyph advances leave visible gaps inside Latin words at fractional scale factors
+const browser = await chromium.launch({ args: ['--font-render-hinting=none'] });
 const page = await browser.newPage({ viewport: { width: 1280, height: 720 }, deviceScaleFactor: SCALE });
 await page.addInitScript(() => { window.__RENDER__ = true; });
 page.on('pageerror', (e) => console.error('PAGE ERROR:', e.message));
