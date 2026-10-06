@@ -19,6 +19,7 @@ const opt = (k, d) => { const i = args.indexOf(k); return i >= 0 ? args[i + 1] :
 const FPS = parseInt(opt('--fps', '24'), 10);
 const OUT = resolve(opt('--out', join(here, 'out')));
 const STILLS = opt('--stills', null);
+const SCALE = parseFloat(opt('--scale', '1'));   // deviceScaleFactor: 1 → 1280×720, 1.5 → 1920×1080, 3 → 3840×2160
 const FFMPEG = process.env.FFMPEG || 'ffmpeg';
 mkdirSync(OUT, { recursive: true });
 
@@ -30,7 +31,8 @@ const pret = join(here, 'fonts', 'pretendard', 'pretendard.css');
 if (existsSync(pret)) fontCss += readFileSync(pret, 'utf8').replace(/url\(["']?(\.\/)?(woff2-dynamic-subset\/[^"')]+)["']?\)/g, (m, d, f) => `url(file://${join(here, 'fonts', 'pretendard', f)})`);
 
 const browser = await chromium.launch();
-const page = await browser.newPage({ viewport: { width: 1280, height: 720 }, deviceScaleFactor: 1 });
+const page = await browser.newPage({ viewport: { width: 1280, height: 720 }, deviceScaleFactor: SCALE });
+await page.addInitScript(() => { window.__RENDER__ = true; });
 page.on('pageerror', (e) => console.error('PAGE ERROR:', e.message));
 await page.goto('file://' + join(here, 'index.html'));
 if (fontCss) await page.addStyleTag({ content: fontCss });
