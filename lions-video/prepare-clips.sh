@@ -29,18 +29,17 @@ x pixels-fem  -ss 35  -t 23  -i clips/src/adma2023-pixels.mp4    -vf "fps=10,cro
 
 # s4 right · colour -> strain read-out validation (MATLAB window, 1550x870). The full window is unreadable
 # on a projector, so it is recomposed on white: [input colour video | true strain map | estimated map]
-# on top and the final 'Mean strain trend' plot (true vs estimated, full run) held still below, so its
-# auto-rescaling axes do not flicker. index.html overlays Korean labels.
+# on top. The 'Mean strain trend' plot below is redrawn live in index.html (data read off the final MATLAB
+# frame), so it animates with the clip and has readable Korean labels instead of auto-rescaling axes.
 rm -rf clips/readout; mkdir -p clips/readout
-"$FF" -y -loglevel error -ss 0 -t 6.6 -i clips/src/readout-validation.mp4 -ss 6.5 -i clips/src/readout-validation.mp4 -filter_complex "\
+"$FF" -y -loglevel error -ss 0 -t 6.6 -i clips/src/readout-validation.mp4 -filter_complex "\
 [0]fps=15,split=3[a][b][c];\
 [a]crop=434:251:62:109,drawbox=x=0:y=0:w=iw:h=18:color=black:t=fill,scale=-2:$(m 108):flags=lanczos[in];\
 [b]crop=360:200:600:136,scale=-2:$(m 108):flags=lanczos[gt];\
 [c]crop=360:200:1096:136,scale=-2:$(m 108):flags=lanczos[es];\
-[1]crop=668:338:70:482,scale=-2:$(m 214):flags=lanczos,loop=loop=-1:size=1:start=0,setpts=N/15/TB[tr];\
 color=c=white:s=$(m 600)x$(m 400):r=15[bg];\
 [bg][in]overlay=$(m 6):$(m 24):shortest=1[o1];[o1][gt]overlay=$(m 198):$(m 24)[o2];\
-[o2][es]overlay=$(m 399):$(m 24)[o3];[o3][tr]overlay=(W-w)/2:$(m 146)" -frames:v 99 -q:v 2 clips/readout/f%04d.jpg
+[o2][es]overlay=$(m 399):$(m 24)" -frames:v 99 -q:v 2 clips/readout/f%04d.jpg
 echo "readout: $(ls clips/readout | wc -l) frames"
 
 # s5 left · MATLAB colour tracking on CIE 1931 (figure window only). Trimmed to the clean part: no

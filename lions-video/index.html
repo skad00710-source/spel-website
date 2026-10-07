@@ -231,7 +231,7 @@
       <div class="olbl" style="left:6px; top:5px; width:187px">입력: 색이 변하는 필름 영상</div>
       <div class="olbl" style="left:198px; top:5px; width:195px">정답 변형률 지도</div>
       <div class="olbl" style="left:399px; top:5px; width:195px">색으로 추정한 변형률 지도</div>
-      <div class="chip sim" style="top:auto; bottom:6px; left:50%; transform:translateX(-50%)">실선: 정답 · 점선: 색으로 추정</div>
+      <canvas id="trend4" width="560" height="250" style="position:absolute; left:20px; top:142px"></canvas>
     </div>
 
     <div class="tools" style="left:28px; top:512px; width:1224px">
@@ -609,8 +609,42 @@ function scene3(lt, dur) {
 }
 
 /* ================= scene 4 : simulation ================= */
+/* Mean strain vs time of the validation run, read off the final frame of the lab's MATLAB plot
+   (0.1 s steps): true strain vs strain estimated from colour. Drawn live so it advances with the clip. */
+const RO = { dt: 0.1, truth: [0, 0, 0.09, 0.19, 0.28, 0.37, 0.47, 0.56, 0.78, 0.93, 1.15, 1.38, 1.64, 1.9, 2.16, 2.46, 2.8, 3.12, 3.44, 3.77, 4.16, 4.51, 4.94, 5.3, 5.67, 6.11, 6.47, 6.9, 7.34, 7.77, 8.2, 8.6, 9.04, 9.44, 9.9, 10.34, 10.77, 11.2, 11.63, 12.0, 12.44, 12.86, 13.26, 13.62, 14.05, 14.41, 14.77, 15.11, 15.49, 15.81, 16.14, 16.46, 16.75, 17.03, 17.34, 17.52, 17.77, 17.95, 18.17, 18.36, 18.51, 18.63, 18.73, 18.84, 18.88, 18.96], est: [0, 0, 0.06, 0.11, 0.17, 0.22, 0.28, 0.43, 0.52, 0.68, 0.89, 1.08, 1.26, 1.5, 1.7, 1.98, 2.13, 2.45, 2.72, 2.98, 3.32, 3.7, 4.02, 4.27, 4.63, 4.96, 5.35, 5.71, 6.07, 6.46, 6.78, 7.2, 7.52, 7.95, 8.3, 8.74, 9.09, 9.44, 9.88, 10.26, 10.61, 10.95, 11.36, 11.66, 12.04, 12.41, 12.81, 13.15, 13.51, 13.92, 14.25, 14.66, 14.9, 15.18, 15.48, 15.8, 16.01, 16.31, 16.51, 16.66, 16.9, 16.94, 17.07, 17.2, 17.26, 17.34] };
+const roAt = (arr, t) => { const f = clamp(t / RO.dt, 0, arr.length - 1), i = Math.floor(f), j = Math.min(i + 1, arr.length - 1); return lerp(arr[i], arr[j], f - i); };
+function drawTrend4(canvas, tNow) {
+  const { c, W, H } = ctx2d(canvas);
+  c.clearRect(0, 0, W, H); c.fillStyle = '#ffffff'; c.fillRect(0, 0, W, H);
+  const x0 = 58, x1 = W - 14, y0 = 30, y1 = H - 34, TMAX = 7, EMAX = 20;
+  const X = (t) => x0 + t / TMAX * (x1 - x0), Y = (e) => y1 - e / EMAX * (y1 - y0);
+  c.strokeStyle = '#eef0f4'; c.lineWidth = 1;
+  for (let e = 5; e <= EMAX; e += 5) { c.beginPath(); c.moveTo(x0, Y(e)); c.lineTo(x1, Y(e)); c.stroke(); }
+  c.strokeStyle = RULE; c.beginPath(); c.moveTo(x0, y0); c.lineTo(x0, y1); c.lineTo(x1, y1); c.stroke();
+  c.fillStyle = MUTED; c.font = '12px "Pretendard"'; c.textAlign = 'right';
+  for (let e = 0; e <= EMAX; e += 5) c.fillText(e + ' %', x0 - 6, Y(e) + 4);
+  c.textAlign = 'center'; for (let t = 0; t <= TMAX; t++) c.fillText(t + '초', X(t), H - 14);
+  c.textAlign = 'left'; c.fillText('평균 변형률', x0, 16);
+  const tEnd = Math.min(tNow, (RO.truth.length - 1) * RO.dt);
+  const path = (arr, col, dash, w) => {
+    c.strokeStyle = col; c.lineWidth = w; c.setLineDash(dash); c.beginPath();
+    for (let t = 0; t <= tEnd + 1e-6; t += 0.05) { const x = X(t), y = Y(roAt(arr, t)); t === 0 ? c.moveTo(x, y) : c.lineTo(x, y); }
+    c.stroke(); c.setLineDash([]);
+    c.fillStyle = col; c.beginPath(); c.arc(X(tEnd), Y(roAt(arr, tEnd)), 4.5, 0, Math.PI * 2); c.fill();
+  };
+  path(RO.truth, '#1f6fd1', [], 3);
+  path(RO.est, '#d9480f', [8, 5], 3);
+  // legend with live values
+  const lx = x0 + 18, ly = y0 + 6;
+  c.font = 'bold 14px "Pretendard"'; c.textAlign = 'left';
+  c.strokeStyle = '#1f6fd1'; c.lineWidth = 3; c.beginPath(); c.moveTo(lx, ly); c.lineTo(lx + 26, ly); c.stroke();
+  c.fillStyle = INK; c.fillText(`정답  ${fmt(roAt(RO.truth, tEnd), 1)} %`, lx + 34, ly + 5);
+  c.strokeStyle = '#d9480f'; c.setLineDash([8, 5]); c.beginPath(); c.moveTo(lx, ly + 24); c.lineTo(lx + 26, ly + 24); c.stroke(); c.setLineDash([]);
+  c.fillText(`색으로 추정  ${fmt(roAt(RO.est, tEnd), 1)} %`, lx + 34, ly + 29);
+}
 function scene4(lt, dur) {
   setClip('clip-s4a', lt); setClip('clip-s4b', lt);
+  drawTrend4($('trend4'), lt * CLIPS['clip-s4b'].speed);
   setProg(4, lt, dur);
 }
 
