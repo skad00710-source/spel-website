@@ -370,6 +370,9 @@ ul { list-style: none; }
 .feature .kr-sub { margin-top: 4px; color: var(--muted); font-size: 0.94rem; font-weight: 500; }
 .feature p { margin-top: 14px; color: var(--ink-soft); font-size: 0.96rem; }
 .feature .tags { margin-top: 16px; display: flex; flex-wrap: wrap; gap: 8px; }
+.feature p.refs { margin-top: 14px; font-size: 0.84rem; color: var(--muted); }
+.feature p.refs a { color: var(--accent); font-weight: 600; white-space: nowrap; }
+.feature p.refs a:hover { text-decoration: underline; }
 .feature .tags li {
   font-size: 0.77rem;
   font-weight: 600;
